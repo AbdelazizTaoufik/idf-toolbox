@@ -14,6 +14,13 @@ class SubmissionController extends Controller
             'text' => $request->text
         ]);
 
-        return response($submission, 201);
+        return response()->json($submission, 201);
     }
+
+    public function destroy(Submission $submission)
+    {
+        $submission->delete();
+
+        return response(null, 204);
+    } 
 }
