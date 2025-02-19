@@ -23,4 +23,9 @@ class SubmissionController extends Controller
 
         return response(null, 204);
     } 
+
+    public function getCreateSubmissionView ()
+    {
+        return view('create-submission');
+    }
 }
