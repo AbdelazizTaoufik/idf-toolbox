@@ -19,3 +19,4 @@ Route::get('/', function () {
 });
 
 Route::get('/create-submission', [SubmissionController::class, 'getCreateSubmissionView'])->name('create.submission.view');
+Route::get('/admin/submissions', [SubmissionController::class, 'getAdminSubmissionView'])->name('admin.submission.view');

@@ -28,4 +28,13 @@ class SubmissionController extends Controller
     {
         return view('create-submission');
     }
+
+    public function getAdminSubmissionView()
+    {
+        $submissions = Submission::all();
+
+        return view('admin.submission', [
+            'submissions' => $submissions
+        ]);
+    }
 }
