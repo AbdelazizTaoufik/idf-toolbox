@@ -9,7 +9,7 @@
     <x-navbar/>
     <body class="bg-gray-100 dark:bg-idfDarkRed">
         <div class="bg-white dark:bg-gray-950 relative overflow-x-auto shadow-md sm:rounded-lg max-w-screen-xl mx-auto mt-8">
-            <form id="submissionForm" action="{{ route('store.submission') }}" method="POST" class="p-4 md:p-5 max-w-">
+            <form id="submissionForm" action="{{ route('store.submission') }}" method="POST" class="p-4 md:p-5">
                 @csrf
                 <div class="grid gap-4 mb-4 grid-cols-2">
                     <div class="col-span-2">
