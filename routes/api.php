@@ -17,7 +17,7 @@ use App\Http\Controllers\SubmissionController;
 
 
 Route::post('/submissions', [SubmissionController::class, 'store'])->name('store.submission');
-Route::delete('/submissions/{submission}', [SubmissionController::class, 'destroy'])->name('store.submission');
+Route::delete('/submissions/{submission}', [SubmissionController::class, 'destroy'])->name('destroy.submission');
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

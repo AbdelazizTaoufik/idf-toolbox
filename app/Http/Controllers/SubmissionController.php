@@ -9,12 +9,12 @@ class SubmissionController extends Controller
 {
     public function store(StoreSubmissionsRequesst $request)
     {
-        $submission = Submission::create([
+        Submission::create([
             'title' => $request->title,
             'text' => $request->text
         ]);
 
-        return response()->json($submission, 201);
+        return view('response');
     }
 
     public function destroy(Submission $submission)
