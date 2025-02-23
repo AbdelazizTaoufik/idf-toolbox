@@ -8,7 +8,7 @@
     </head>
     <x-navbar/>
     
-    <body class="bg-gray-100 dark:bg-gray-950">
+    <body class="bg-gray-100 dark:bg-idfDarkRed">
         <div class="relative overflow-x-auto shadow-md rounded-xl max-w-screen-xl mx-auto mt-8">
             <table class="w-full text-sm text-left rtl:text-right text-red-100">
                 <thead class="text-xs text-white uppercase bg-red-900 dark:text-white">
@@ -30,16 +30,18 @@
                         <th scope="row" class="px-6 py-4 font-medium text-gray-800 dark:text-white whitespace-nowrap ">
                             {{$submission->title}}
                         </th>
-                        <td class="px-6 py-4 text-gray-800 dark:text-white">
-                            <x-information-modal
+                        <td class="px-1 py-4 text-gray-800 dark:text-white">
+                            <x-modals.information
                                 :id="$submission->id"
                                 :title="$submission->title"
                                 :text="$submission->text"
                                 button-text="Beitrag lesen"
                             />
                         </td>
-                        <td class="px-6 py-4">
-                            <a href="#" class="font-medium text-gray-800 dark:text-white hover:underline">Edit</a>
+                        <td class="px-1 py-4">
+                            <x-modals.delete-item
+                                :id="$submission->id"
+                            />
                         </td>
                     </tr>
                 </tbody>

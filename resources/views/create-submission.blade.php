@@ -7,8 +7,8 @@
         @vite(['resources/css/app.css','resources/js/app.js'])
     </head>
     <x-navbar/>
-    <body class="bg-gray-100 dark:bg-gray-950">
-        <div class="bg-white dark:bg-gray-900 relative overflow-x-auto shadow-md sm:rounded-lg max-w-screen-xl mx-auto mt-8">
+    <body class="bg-gray-100 dark:bg-idfDarkRed">
+        <div class="bg-white dark:bg-gray-950 relative overflow-x-auto shadow-md sm:rounded-lg max-w-screen-xl mx-auto mt-8">
             <form id="submissionForm" action="{{ route('store.submission') }}" method="POST" class="p-4 md:p-5 max-w-">
                 @csrf
                 <div class="grid gap-4 mb-4 grid-cols-2">
