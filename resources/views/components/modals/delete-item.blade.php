@@ -48,10 +48,14 @@
             }
         }).then(response => {
             if (response.ok) {
-                location.reload(); // Seite neu laden nach erfolgreichem Löschen
-            } else {
-                alert("Fehler beim Löschen!");
-            }
+            	location.reload();
+        } else if (response.status === 404) {
+            alert("Dieser Beitrag wurde bereits entfernt.");
+            location.reload();
+        } else {
+            alert("Fehler beim Löschen!");
+            location.reload();
+        }
         }).catch(error => console.error("Error:", error));
     });
 </script>

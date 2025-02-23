@@ -7,7 +7,9 @@
         @vite(['resources/css/app.css','resources/js/app.js'])
     </head>
     <x-navbar/>
-    <body class="bg-white dark:bg-gray-950">
-        Erfolgreich
+    <body class="bg-gray-100 dark:bg-idfDarkRed">
+        <p class="text-gray-800 dark:text-white">
+            Vielen Dank für deinen Beitrag. 💖
+        </p>
     </body>
 </html>
