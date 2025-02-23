@@ -9,21 +9,15 @@
     <x-navbar/>
     
     <body class="bg-gray-100 dark:bg-gray-950">
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-screen-xl mx-auto mt-8">
+        <div class="relative overflow-x-auto shadow-md rounded-xl max-w-screen-xl mx-auto mt-8">
             <table class="w-full text-sm text-left rtl:text-right text-red-100">
                 <thead class="text-xs text-white uppercase bg-red-900 dark:text-white">
                     <tr>
                         <th scope="col" class="px-6 py-3">
-                            Product name
+                            Title
                         </th>
                         <th scope="col" class="px-6 py-3">
-                            Color
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Category
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Price
+                            Inhalt
                         </th>
                         <th scope="col" class="px-6 py-3">
                             Action
@@ -37,13 +31,12 @@
                             {{$submission->title}}
                         </th>
                         <td class="px-6 py-4 text-gray-800 dark:text-white">
-                            Silver
-                        </td>
-                        <td class="px-6 py-4 text-gray-800 dark:text-white">
-                            Laptop
-                        </td>
-                        <td class="px-6 py-4 text-gray-800 dark:text-white">
-                            $2999
+                            <x-information-modal
+                                :id="$submission->id"
+                                :title="$submission->title"
+                                :text="$submission->text"
+                                button-text="Beitrag lesen"
+                            />
                         </td>
                         <td class="px-6 py-4">
                             <a href="#" class="font-medium text-gray-800 dark:text-white hover:underline">Edit</a>
