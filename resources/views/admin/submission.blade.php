@@ -9,17 +9,17 @@
     <x-navbar/>
     
     <body class="bg-gray-100 dark:bg-idfDarkRed">
-        <div class="relative overflow-x-auto shadow-md rounded-xl max-w-screen-xl mx-auto mt-8">
+        <div class="relative overflow-x-auto shadow-md rounded-xl max-w-screen-lg mx-auto my-8">
             <table class="w-full text-sm text-left rtl:text-right text-red-100">
                 <thead class="text-xs text-white uppercase bg-red-900 dark:text-white">
                     <tr>
                         <th scope="col" class="px-6 py-3">
                             Title
                         </th>
-                        <th scope="col" class="px-6 py-3">
+                        <th scope="col" class="px-6 py-3 text-center">
                             Inhalt
                         </th>
-                        <th scope="col" class="px-6 py-3">
+                        <th scope="col" class="px-6 py-3 text-center">
                             Action
                         </th>
                     </tr>
@@ -30,7 +30,7 @@
                         <th scope="row" class="px-6 py-4 font-medium text-gray-800 dark:text-white whitespace-nowrap ">
                             {{$submission->title}}
                         </th>
-                        <td class="px-1 py-4 text-gray-800 dark:text-white">
+                        <td class="px-1 py-4 text-gray-800 dark:text-white text-center">
                             <x-modals.information
                                 :id="$submission->id"
                                 :title="$submission->title"
@@ -38,10 +38,8 @@
                                 button-text="Beitrag lesen"
                             />
                         </td>
-                        <td class="px-1 py-4">
-                            <x-modals.delete-item
-                                :id="$submission->id"
-                            />
+                        <td class="px-1 py-4 text-center">
+                            <x-modals.delete-item :id="$submission->id" />
                         </td>
                     </tr>
                 </tbody>
