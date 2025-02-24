@@ -31,10 +31,8 @@ class SubmissionController extends Controller
 
     public function getAdminSubmissionView()
     {
-        $submissions = Submission::orderBy('created_at', 'desc')->get();
+        $submissions = Submission::orderBy('created_at', 'desc')->paginate(10);
 
-        return view('admin.submission', [
-            'submissions' => $submissions
-        ]);
+        return view('admin.submission', compact('submissions'));
     }
 }

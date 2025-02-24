@@ -31,4 +31,5 @@
             </form>
         </div>
     </body>
+    <x-footer/>
 </html>
