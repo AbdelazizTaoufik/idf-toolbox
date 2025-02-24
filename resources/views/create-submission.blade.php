@@ -8,12 +8,12 @@
     </head>
     <x-navbar/>
     <body class="bg-gray-100 dark:bg-idfDarkRed">
-        <div class="bg-white dark:bg-red-950 relative overflow-x-auto shadow-md sm:rounded-lg max-w-screen-xl mx-auto mt-8">
+        <div class="bg-white dark:bg-red-950 relative overflow-x-auto shadow-md rounded-xl max-w-screen-xl mx-auto mt-8">
             <form id="submissionForm" action="{{ route('store.submission') }}" method="POST" class="p-4 md:p-5">
                 @csrf
                 <div class="grid gap-4 mb-4 grid-cols-2">
                     <div class="col-span-2">
-                        <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Überschrift</label>
+                        <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Betreff</label>
                         <input type="text" name="title" id="title" class="bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 border-red-300 focus:ring-red-500 focus:border-red-500 dark:bg-idfDarkRed dark:border-red-800 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
                     </div>
                     <div class="col-span-2">
