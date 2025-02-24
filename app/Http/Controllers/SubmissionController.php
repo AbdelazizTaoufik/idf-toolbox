@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSubmissionsRequesst;
 use App\Models\Submission;
+use Illuminate\Http\Request;
 
 class SubmissionController extends Controller
 {
@@ -29,9 +30,19 @@ class SubmissionController extends Controller
         return view('create-submission');
     }
 
-    public function getAdminSubmissionView()
+    public function getAdminSubmissionView(Request $request)
     {
-        $submissions = Submission::orderBy('created_at', 'desc')->paginate(10);
+        $query = Submission::query();
+
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = '%' . $request->search . '%';
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('title', 'like', $searchTerm)
+                ->orWhere('text', 'like', $searchTerm);
+            });
+        }
+
+        $submissions = $query->orderBy('created_at', 'desc')->paginate(10);
 
         return view('admin.submission', compact('submissions'));
     }

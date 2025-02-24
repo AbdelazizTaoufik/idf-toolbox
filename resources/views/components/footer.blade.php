@@ -8,7 +8,7 @@
             </a>
             <ul class="flex flex-wrap items-center mb-6 text-sm font-medium text-white sm:mb-0">
                 <li>
-                    <a href="#" class="hover:underline me-4 md:me-6">Datenschutz</a>
+                    <a href="https://islamischedenkfabrik.de/datenschutzerklaerung/" class="hover:underline me-4 md:me-6">Datenschutz</a>
                 </li>
                 <li>
                     <a href="#" class="hover:underline me-4 md:me-6">Impressum</a>

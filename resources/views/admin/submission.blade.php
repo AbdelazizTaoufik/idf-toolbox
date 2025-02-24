@@ -9,6 +9,28 @@
     <x-navbar/>
     
     <body class="bg-gray-100 dark:bg-idfDarkRed">
+
+        <div class="max-w-screen-lg mx-auto mt-8">
+            <form method="GET" action="{{ route('admin.submission.view') }}" class="flex items-center space-x-2">
+                <input type="text" name="search" 
+                       placeholder="Suche nach Beitrag..."
+                       value="{{ request('search') }}"
+                       class="px-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600">
+                
+                <button type="submit" 
+                        class="px-4 py-2 bg-red-900 text-white rounded-lg hover:bg-red-800 transition duration-300">
+                    Suchen
+                </button>
+                
+                @if(request('search'))
+                    <a href="{{ route('admin.submission.view') }}" 
+                       class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition duration-300">
+                        Zurücksetzen
+                    </a>
+                @endif
+            </form>
+        </div>
+        
         <div class="relative overflow-x-auto shadow-md rounded-xl max-w-screen-lg mx-auto my-8">
             <table class="w-full text-sm text-left rtl:text-right text-red-100">
                 <thead class="text-xs text-white uppercase bg-red-900 dark:text-white">
@@ -44,8 +66,6 @@
                     @endforeach
                 </tbody>
             </table>
-        
-            
         </div>
         <!-- Pagination -->
         <div class="m-6 flex justify-center">
