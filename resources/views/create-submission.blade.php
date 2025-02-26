@@ -6,8 +6,8 @@
 
         @vite(['resources/css/app.css','resources/js/app.js'])
     </head>
-    <x-navbar/>
-    <body class="bg-gradient-to-t from-red-100 via-red-200 to-slate-50 dark:bg-gradient-to-t dark:from-neutral-800 dark:via-red-900 dark:to-neutral-800">
+    <body class="bg-gradient-to-t from-white via-red-200 to-white dark:bg-gradient-to-t dark:from-neutral-900 dark:via-red-900 dark:to-neutral-900">
+        <x-navbar/>
         <div class="bg-white dark:bg-red-950 relative overflow-x-auto shadow-md rounded-xl max-w-screen-xl mx-auto my-8">
             <form id="submissionForm" action="{{ route('store.submission') }}" method="POST" class="p-4 md:p-5">
                 @csrf
@@ -30,6 +30,6 @@
                 </button>
             </form>
         </div>
+        <x-footer/>
     </body>
-    <x-footer/>
 </html>

@@ -6,13 +6,13 @@
 
         @vite(['resources/css/app.css','resources/js/app.js'])
     </head>
-    <x-navbar/>
     
-    <body class="bg-gradient-to-t from-red-100 via-red-200 to-slate-50 dark:bg-gradient-to-t dark:from-neutral-800 dark:via-red-900 dark:to-neutral-800">
+    <body class="bg-gradient-to-t from-white via-red-200 to-white dark:bg-gradient-to-t dark:from-neutral-900 dark:via-red-900 dark:to-neutral-900">
+        <x-navbar/>
         <div class="max-w-screen-lg mx-auto mt-8">
             <form method="GET" action="{{ route('admin.submission.view') }}" class="flex items-center space-x-2">
                 <input type="text" name="search" 
-                       placeholder="Suche nach Beitrag..."
+                       placeholder="🔍 Suche nach Beitrag..."
                        value="{{ request('search') }}"
                        class="px-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600">
                 
@@ -71,6 +71,6 @@
             {{ $submissions->links('components.custom-pagination')}}
         </div>
         
+        <x-footer/>
     </body>
-    <x-footer/>
 </html>
