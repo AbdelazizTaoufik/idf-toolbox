@@ -4,36 +4,36 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         @vite(['resources/css/app.css','resources/js/app.js'])
-        <style>
-            /* Smooth transition effects */
-            
-        </style>
     </head>
     
     <body class="bg-gradient-to-t from-white via-red-200 to-white dark:bg-gradient-to-t dark:from-neutral-900 dark:via-red-900 dark:to-neutral-900">
         <x-navbar/>
         <div class="max-w-screen-lg mx-auto mt-8 fade-in">
-            <form method="GET" action="{{ route('admin.submission.view') }}" class="flex items-center space-x-2">
+            <form method="GET" action="{{ route('admin.submission.view') }}" class="flex items-center space-x-2 bg-white dark:bg-neutral-800 rounded-full shadow-lg px-4 py-2">
+                <span class="text-gray-400 dark:text-gray-300">
+                    🔍
+                </span>
                 <input type="text" name="search" 
-                       placeholder="🔍 Suche nach Beitrag..."
+                       placeholder="Suche nach Beitrag..."
                        value="{{ request('search') }}"
-                       class="px-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600">
+                       class="px-2 py-2 w-full bg-transparent border-none focus:outline-none focus:ring-0 dark:text-white">
                 
                 <button type="submit" 
-                        class="px-4 py-2 bg-red-900 text-white rounded-lg hover:bg-red-800 transition duration-300">
+                        class="px-4 py-2 bg-red-900 text-white rounded-full hover:bg-red-800 transition duration-300">
                     Suchen
                 </button>
                 
                 @if(request('search'))
                     <a href="{{ route('admin.submission.view') }}" 
-                       class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition duration-300">
-                        Zurücksetzen
+                       class="px-4 py-2 bg-gray-300 text-gray-700 rounded-full hover:bg-gray-400 transition duration-300">
+                        ✖
                     </a>
                 @endif
             </form>
         </div>
         
-        <div class="relative overflow-x-auto shadow-md rounded-xl max-w-screen-lg mx-auto my-8 fade-in">
+        
+        <div class="relative overflow-x-auto shadow-lg rounded-xl max-w-screen-lg mx-auto my-8 fade-in">
             <table class="w-full text-sm text-left rtl:text-right text-red-100">
                 <thead class="text-xs text-white uppercase bg-red-900 dark:text-white">
                     <tr>
