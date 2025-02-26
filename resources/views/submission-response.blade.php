@@ -10,7 +10,7 @@
         
         <x-navbar/>
 
-        <main class="flex-grow flex items-center justify-center p-6">
+        <main class="flex-grow flex items-center justify-center p-4">
             <div class="bg-white dark:bg-red-950 relative overflow-hidden shadow-lg rounded-2xl max-w-md w-full text-center">
                 <div class="relative w-full h-56">
                     <img class="absolute inset-0 w-full h-full object-cover rounded-t-2xl" 
@@ -23,7 +23,7 @@
                 </div>
                 <div class="px-6 pb-6">
                     <a href="https://islamischedenkfabrik.de/" 
-                       class="inline-block w-full bg-red-900 hover:bg-red-800 text-white font-semibold py-3 rounded-lg transition-all duration-300">
+                       class="inline-block w-full bg-red-900 hover:bg-red-800 text-white font-semibold py-3 rounded-2xl transition-all duration-300">
                         Zurück zur Startseite
                     </a>
                 </div>

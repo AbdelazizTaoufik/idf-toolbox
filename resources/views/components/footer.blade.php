@@ -1,10 +1,10 @@
 
 
-<footer class="bg-red-900 rounded-lg shadow-sm m-4">
+<footer class="bg-red-900 rounded-2xl shadow-sm m-4">
     <div class="w-full max-w-screen-xl mx-auto p-4 md:py-8">
         <div class="sm:flex sm:items-center sm:justify-between">
             <a href="https://islamischedenkfabrik.de/" class="flex items-center my-4 space-x-3 rtl:space-x-reverse">
-                <img src="{{ asset("storage/images/idf-logo.png") }}" class="h-16 rounded-lg transiontion duration-300 ease-in-out hover:scale-110 active:scale-90" alt="Islamische Denkfabrik Logo" />
+                <img src="{{ asset("storage/images/idf-logo.png") }}" class="h-16 rounded-md transiontion duration-300 ease-in-out hover:scale-110 active:scale-90" alt="Islamische Denkfabrik Logo" />
             </a>
             <ul class="flex flex-wrap items-center mb-6 text-sm font-medium text-white sm:mb-0">
                 <li>
