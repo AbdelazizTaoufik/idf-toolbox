@@ -5,7 +5,7 @@
             <span class="px-3 py-1 text-gray-400 bg-gray-200 rounded-lg cursor-not-allowed">←</span>
         @else
             <a href="{{ $paginator->previousPageUrl() }}" 
-               class="px-3 py-1 text-white bg-red-700 hover:bg-red-800 rounded-lg transition duration-300">
+               class="px-3 py-1 text-white bg-red-900 hover:bg-red-800 rounded-lg transition duration-300">
                 ←
             </a>
         @endif
@@ -19,10 +19,10 @@
             @if (is_array($element))
                 @foreach ($element as $page => $url)
                     @if ($page == $paginator->currentPage())
-                        <span class="px-3 py-1 text-white bg-red-900 rounded-lg">{{ $page }}</span>
+                        <span class="px-3 py-1 text-white bg-red-700 rounded-lg">{{ $page }}</span>
                     @else
                         <a href="{{ $url }}" 
-                           class="px-3 py-1 text-white bg-red-700 hover:bg-red-800 rounded-lg transition duration-300">
+                           class="px-3 py-1 text-white bg-red-900 hover:bg-red-800 rounded-lg transition duration-300">
                             {{ $page }}
                         </a>
                     @endif
@@ -33,7 +33,7 @@
         {{-- Nächste Seite --}}
         @if ($paginator->hasMorePages())
             <a href="{{ $paginator->nextPageUrl() }}" 
-               class="px-3 py-1 text-white bg-red-700 hover:bg-red-800 rounded-lg transition duration-300">
+               class="px-3 py-1 text-white bg-red-900 hover:bg-red-800 rounded-lg transition duration-300">
                 →
             </a>
         @else

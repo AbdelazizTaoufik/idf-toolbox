@@ -8,7 +8,7 @@
     </head>
     <x-navbar/>
     <body class="bg-gray-100 dark:bg-idfDarkRed">
-        <div class="bg-white dark:bg-red-950 relative overflow-x-auto shadow-md rounded-xl max-w-screen-xl mx-auto mt-8">
+        <div class="bg-white dark:bg-red-950 relative overflow-x-auto shadow-md rounded-xl max-w-screen-xl mx-auto my-8">
             <form id="submissionForm" action="{{ route('store.submission') }}" method="POST" class="p-4 md:p-5">
                 @csrf
                 <div class="grid gap-4 mb-4 grid-cols-2">
@@ -20,6 +20,10 @@
                         <label for="text" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Inhalt</label>
                         <textarea name="text" id="text" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-red-300 focus:ring-red-500 focus:border-red-500 dark:bg-idfDarkRed dark:border-red-800 dark:placeholder-gray-400 dark:text-white dark:focus:ring-red-500 dark:focus:border-red-500" required></textarea>
                     </div>
+                    {{-- <div class="flex items-center h-5">
+                        <input id="terms" type="checkbox" value="" class="w-4 h-4 border border-gray-300 rounded-sm bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" required />
+                        <label for="terms" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I agree with the <a href="#" class="text-blue-600 hover:underline dark:text-blue-500">terms and conditions</a></label>
+                    </div> --}}
                 </div>
                 <button type="submit" class="text-white inline-flex items-center bg-red-900 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                 <svg class="w-6 h-6 pr-2  text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
