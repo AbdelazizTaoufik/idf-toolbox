@@ -18,5 +18,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/submission-response', function() {
+    return view('submission-response');
+});
+
 Route::get('/create-submission', [SubmissionController::class, 'getCreateSubmissionView'])->name('create.submission.view');
 Route::get('/admin/submissions', [SubmissionController::class, 'getAdminSubmissionView'])->name('admin.submission.view');

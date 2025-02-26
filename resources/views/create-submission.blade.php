@@ -18,7 +18,7 @@
                     </div>
                     <div class="col-span-2">
                         <label for="text" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Inhalt</label>
-                        <textarea name="text" id="text" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-red-300 focus:ring-red-500 focus:border-red-500 dark:bg-neutral-950 dark:border-red-800 dark:placeholder-gray-400 dark:text-white dark:focus:ring-red-500 dark:focus:border-red-500" required></textarea>
+                        <textarea name="text" id="text" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-red-300 focus:ring-red-500 focus:border-red-500 dark:bg-idfDarkRed dark:border-red-800 dark:placeholder-gray-400 dark:text-white dark:focus:ring-red-500 dark:focus:border-red-500" required></textarea>
                     </div>
                 </div>
                 <button type="submit" class="text-white inline-flex items-center bg-red-900 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">

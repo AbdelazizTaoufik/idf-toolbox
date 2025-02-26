@@ -15,7 +15,7 @@ class SubmissionController extends Controller
             'text' => $request->text
         ]);
 
-        return view('response');
+        return redirect('submission-response');
     }
 
     public function destroy(Submission $submission)
