@@ -8,8 +8,7 @@
     </head>
     <x-navbar/>
     
-    <body class="bg-gray-100 dark:bg-idfDarkRed">
-
+    <body class="bg-gradient-to-t from-red-100 via-red-200 to-slate-50 dark:bg-gradient-to-t dark:from-neutral-800 dark:via-red-900 dark:to-neutral-800">
         <div class="max-w-screen-lg mx-auto mt-8">
             <form method="GET" action="{{ route('admin.submission.view') }}" class="flex items-center space-x-2">
                 <input type="text" name="search" 
