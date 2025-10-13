@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SubmissionController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,3 +25,4 @@ Route::get('/submission-response', function() {
 
 Route::get('/create-submission', [SubmissionController::class, 'getCreateSubmissionView'])->name('create.submission.view');
 Route::get('/admin/submissions', [SubmissionController::class, 'getAdminSubmissionView'])->name('admin.submission.view');
+Route::get('admin', [AdminController::class, 'getAdminView'])->name('admin.view');
