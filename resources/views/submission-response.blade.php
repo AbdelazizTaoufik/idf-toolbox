@@ -22,7 +22,7 @@
                     <p class="text-gray-700 dark:text-gray-300 text-lg">Dein Beitrag wurde anonym übermittelt. Wir schätzen dein Vertrauen und werden uns In schāʾa llāh um dein Anliegen kümmern.</p>
                 </div>
                 <div class="px-6 pb-6">
-                    <a href="https://islamischedenkfabrik.de/" 
+                    <a href="/" 
                        class="inline-block w-full bg-red-900 hover:bg-red-800 text-white font-semibold py-3 rounded-2xl transition-all duration-300">
                         Zurück zur Startseite
                     </a>
