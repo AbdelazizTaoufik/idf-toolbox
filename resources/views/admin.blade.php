@@ -6,7 +6,7 @@
     <title>Admin</title>
     @vite(['resources/css/app.css','resources/js/app.js'])
   </head>
-  <body class="bg-gradient-to-t from-white via-red-200 to-white dark:bg-gradient-to-t dark:from-neutral-900 dark:via-red-900 dark:to-neutral-900 min-h-screen flex flex-col justify-between">
+  <body class="bg-gradient-to-br from-white via-red-200 to-white dark:bg-gradient-to-br dark:from-neutral-900 dark:via-red-900 dark:to-neutral-900 min-h-screen flex flex-col justify-between">
     <x-navbar/>
         <div class="flex flex-col items-center justify-center flex-1 py-12 px-2">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-4xl">

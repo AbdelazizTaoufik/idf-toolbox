@@ -6,16 +6,12 @@
     <title>Admin</title>
     @vite(['resources/css/app.css','resources/js/app.js'])
   </head>
-  <body class="bg-gradient-to-t from-white via-red-200 to-white dark:bg-gradient-to-t dark:from-neutral-900 dark:via-red-900 dark:to-neutral-900 min-h-screen flex flex-col justify-between">
+  <body class="bg-gradient-to-br from-white via-red-200 to-white dark:bg-gradient-to-br dark:from-neutral-900 dark:via-red-900 dark:to-neutral-900 min-h-screen flex flex-col justify-between">
     <x-navbar/>
-    <main class="flex-1 flex items-center justify-center py-16 px-6">
+    <main class="flex-1 flex items-center justify-center py-16 px-3">
       <div class="relative w-full max-w-5xl">
-        <!-- Dekorative Farbblobs -->
-        <div class="pointer-events-none absolute -inset-x-10 -top-20 transform-gpu blur-3xl opacity-30">
-          <div class="bg-gradient-to-r from-red-400 via-pink-600 to-purple-700 opacity-80 rounded-full h-64 w-64 mx-auto translate-x-20" style="filter: blur(80px);"></div>
-        </div>
 
-        <section class="relative bg-white/60 dark:bg-neutral-900/60 backdrop-blur-md rounded-3xl shadow-2xl border border-white/10 p-12 md:p-16 overflow-hidden">
+        <section class="relative bg-white/60 dark:bg-neutral-900/60 backdrop-blur-md rounded-3xl shadow-2xl border border-white/10 p-6 md:p-16 overflow-hidden">
           <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-red-400 to-yellow-400 drop-shadow-lg">
             IDF Toolbox
           </h1>

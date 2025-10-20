@@ -6,7 +6,7 @@
 
         @vite(['resources/css/app.css','resources/js/app.js'])
     </head>
-    <body class="bg-gradient-to-t from-white via-red-200 to-white dark:bg-gradient-to-t dark:from-neutral-900 dark:via-red-900 dark:to-neutral-900">
+    <body class="bg-gradient-to-br from-white via-red-200 to-white dark:bg-gradient-to-br dark:from-neutral-900 dark:via-red-900 dark:to-neutral-900">
         <x-navbar/>
         <main class="flex-grow flex items-center justify-center p-4">
             <div class="bg-white dark:bg-red-950 relative overflow-hidden shadow-lg rounded-2xl max-w-md w-full text-center">

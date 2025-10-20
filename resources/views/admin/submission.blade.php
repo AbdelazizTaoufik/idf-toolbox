@@ -6,7 +6,7 @@
         @vite(['resources/css/app.css','resources/js/app.js'])
     </head>
     
-    <body class="bg-gradient-to-t from-white via-red-200 to-white dark:bg-gradient-to-t dark:from-neutral-900 dark:via-red-900 dark:to-neutral-900">
+    <body class="bg-gradient-to-br from-white via-red-200 to-white dark:bg-gradient-to-br dark:from-neutral-900 dark:via-red-900 dark:to-neutral-900">
         <x-navbar/>
         <div class="max-w-screen-lg mx-auto mt-8 fade-in">
             <form method="GET" action="{{ route('admin.submission.view') }}" class="flex items-center space-x-2 bg-white dark:bg-neutral-800 rounded-full shadow-lg px-4 py-2">
