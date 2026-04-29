@@ -15,7 +15,8 @@ class StoreSubmissionsRequesst extends FormRequest
     {
         return [
             'title' => 'required',
-            'text' => 'required'
+            'text' => 'required',
+            'meeting_group_id' => 'nullable|uuid|exists:meeting_groups,id'
         ];
     }
 }

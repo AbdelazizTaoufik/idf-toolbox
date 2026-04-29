@@ -23,10 +23,10 @@
                 description="Sieh dir die Einträge aus dem Kummerkasten an."
             />
             <x-admin-card
-                url="{{ route('admin.submission.view') }}"
-                svg="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                title="Coming Soon"
-                description="..."
+                url="{{ route('meeting-groups.index') }}"
+                svg="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM9 16a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6z"
+                title="Sitzungsgruppen"
+                description="Verwalte die Sitzungsgruppen."
             />
         </div>
         </div>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\MeetingGroupController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SubmissionController;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,15 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'getAdminView'])->name('admin.view');
     Route::get('/admin/submissions', [SubmissionController::class, 'getAdminSubmissionView'])
         ->name('admin.submission.view');
+    
+    Route::get('/admin/meeting-groups', [MeetingGroupController::class, 'index'])
+        ->name('meeting-groups.index');
+    Route::post('/admin/meeting-groups', [MeetingGroupController::class, 'store'])
+        ->name('meeting-groups.store');
+    Route::patch('/admin/meeting-groups/{meetingGroup}', [MeetingGroupController::class, 'update'])
+        ->name('meeting-groups.update');
+    Route::delete('/admin/meeting-groups/{meetingGroup}', [MeetingGroupController::class, 'destroy'])
+        ->name('meeting-groups.destroy');
 });
 
 Route::get('/dashboard', function () {

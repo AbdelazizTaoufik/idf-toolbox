@@ -14,6 +14,15 @@
                     @csrf
                     <div class="grid gap-4 mb-4 grid-cols-2">
                         <div class="col-span-2">
+                            <label for="meeting_group_id" class="text-left block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sitzungsgruppe <span class="text-gray-400">(optional)</span></label>
+                            <select name="meeting_group_id" id="meeting_group_id" class="bg-gray-50 border text-gray-900 text-sm rounded-2xl focus:ring-red-500 focus:border-red-500 block w-full p-2.5 border-red-300 dark:bg-idfDarkRed dark:border-red-800 dark:placeholder-gray-400 dark:text-white dark:focus:ring-red-500 dark:focus:border-red-500">
+                                <option value="">-- Keine Sitzungsgruppe --</option>
+                                @foreach($meetingGroups as $group)
+                                    <option value="{{ $group->id }}">{{ $group->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-span-2">
                             <label for="title" class="text-left block mb-2 text-sm font-medium text-gray-900 dark:text-white">Betreff</label>
                             <input type="text" name="title" id="title" class="bg-gray-50 border text-gray-900 text-sm rounded-2xl focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 border-red-300 focus:ring-red-500 focus:border-red-500 dark:bg-idfDarkRed dark:border-red-800 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
                         </div>
@@ -21,6 +30,7 @@
                             <label for="text" class="text-left block mb-2 text-sm font-medium text-gray-900 dark:text-white">Inhalt</label>
                             <textarea name="text" id="text" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-2xl border border-red-300 focus:ring-red-500 focus:border-red-500 dark:bg-idfDarkRed dark:border-red-800 dark:placeholder-gray-400 dark:text-white dark:focus:ring-red-500 dark:focus:border-red-500" required></textarea>
                         </div>
+                        
                     </div>
                     <button type="submit" class="text-white inline-flex items-center bg-red-900 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-2xl text-sm px-5 py-2.5 text-center">
                     <svg class="w-6 h-6 pr-2  text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
