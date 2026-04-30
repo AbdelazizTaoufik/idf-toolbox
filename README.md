@@ -62,7 +62,7 @@ Der Vorstand hat Zugriff auf:
 
 ```bash
 git clone <repository-url>
-cd idf-whisper-box
+cd idf-toolbox
 ```
 
 ### 2. Abhängigkeiten installieren
@@ -126,7 +126,7 @@ Die Anwendung ist nun unter `http://localhost:8000` erreichbar.
 ## 📁 Projektstruktur
 
 ```
-idf-whisper-box/
+idf-toolbox/
 ├── app/
 │   ├── Http/
 │   │   ├── Controllers/
@@ -240,7 +240,7 @@ Dieses Projekt ist unter der [MIT License](LICENSE) lizenziert.
 Für Fragen oder Unterstützung:
 
 - **Website:** [https://islamischedenkfabrik.de/](https://islamischedenkfabrik.de/)
-- **GitHub:** [AbdelazizTaoufik/idf-whisper-box](https://github.com/AbdelazizTaoufik/idf-toolbox)
+- **GitHub:** [AbdelazizTaoufik/idf-toolbox](https://github.com/AbdelazizTaoufik/idf-toolbox)
 
 ---
 
