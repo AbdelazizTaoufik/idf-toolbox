@@ -9,11 +9,13 @@
     <body class="bg-gradient-to-br from-white via-red-200 to-white dark:bg-gradient-to-br dark:from-neutral-900 dark:via-red-900 dark:to-neutral-900">
         <x-navbar/>
         <div class="max-w-screen-lg mx-auto mt-8 fade-in px-4">
-            <form method="GET" action="{{ route('admin.submission.view') }}" class="space-y-4 bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-6 mb-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form method="GET" action="{{ route('admin.submission.view') }}" class="bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
                     <!-- Search -->
-                    <div class="flex items-center space-x-2">
-                        <span class="text-gray-400 dark:text-gray-300">🔍</span>
+                    <div class="flex items-center space-x-2 md:col-span-4">
+                        <svg class="w-5 h-5 text-gray-400 dark:text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
                         <input type="text" name="search" 
                                placeholder="Suche nach Beitrag..."
                                value="{{ request('search') }}"
@@ -21,8 +23,10 @@
                     </div>
 
                     <!-- Filter by Meeting Group -->
-                    <div class="flex items-center space-x-2">
-                        <span class="text-gray-400 dark:text-gray-300">📋</span>
+                    <div class="flex items-center space-x-2 md:col-span-4">
+                        <svg class="w-5 h-5 text-gray-400 dark:text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                        </svg>
                         <select name="meeting_group_id" class="px-4 py-2 w-full bg-gray-50 dark:bg-neutral-700 border border-red-300 dark:border-red-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:text-white">
                             <option value="">-- Alle Sitzungsgruppen --</option>
                             @foreach($meetingGroups as $group)
@@ -32,18 +36,25 @@
                             @endforeach
                         </select>
                     </div>
-                </div>
 
-                <div class="flex gap-2 pt-2">
-                    <button type="submit" class="px-4 py-2 bg-red-900 text-white rounded-lg hover:bg-red-800 transition duration-300 font-medium">
-                        Filtern
-                    </button>
-                    
-                    @if(request('search') || request('meeting_group_id'))
-                        <a href="{{ route('admin.submission.view') }}" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-white rounded-lg hover:bg-gray-400 transition duration-300 font-medium">
-                            ✖ Filter zurücksetzen
-                        </a>
-                    @endif
+                    <!-- Buttons -->
+                    <div class="flex gap-2 md:col-span-4">
+                        <button type="submit" class="flex items-center justify-center gap-2 px-4 py-2 bg-red-900 text-white rounded-lg hover:bg-red-800 transition duration-300 font-medium flex-shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                            </svg>
+                            <span class="hidden sm:inline">Filtern</span>
+                        </button>
+                        
+                        @if(request('search') || request('meeting_group_id'))
+                            <a href="{{ route('admin.submission.view') }}" class="flex items-center justify-center gap-2 px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition duration-300 font-medium flex-shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                <span class="hidden sm:inline">Zurücksetzen</span>
+                            </a>
+                        @endif
+                    </div>
                 </div>
             </form>
         </div>
