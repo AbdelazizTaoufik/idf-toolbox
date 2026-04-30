@@ -1,66 +1,247 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# IDF Toolbox
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Die **IDF Toolbox** ist eine zentrale Verwaltungs- und Organisationsplattform für die Islamische Denkfabrik e.V. Das Projekt verfolgt das Ziel, die Ansammlung von Wissen und die Stärkung der Gemeinschaft durch digitale Werkzeuge zu fördern.
 
-## About Laravel
+**Website:** [https://islamischedenkfabrik.de/](https://islamischedenkfabrik.de/)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🎯 Übersicht
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Die IDF Toolbox befindet sich noch im Aufbau. Der digitale **anonyme Kummerkasten** ist bereits einsatzbereit und wird kontinuierlich um weitere Funktionen erweitert.
 
-## Learning Laravel
+### ✨ Aktuelle Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+#### 🎁 Anonymer Kummerkasten
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Ein offenes Forum für die Mitgliederund Besucher der Islamischen Denkfabrik e.V., um:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Konstruktive Kritik** zu äußern
+- **Verbesserungsvorschläge** zu machen
+- **Persönliche Anliegen** zu teilen, die persönlich schwer zu äußern sind
 
-## Laravel Sponsors
+Der Kummerkasten ermöglicht es schüchternen oder zurückhaltenden Personen, ihre Gedanken anonym einzubringen und trägt so zu einer besseren Gemeinschaftserfahrung bei.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+**Optionale Zuordnung zu Sitzungsgruppen:**
+Beiträge können einer Sitzungsgruppe zugeordnet werden, damit relevante Gruppenleiter sich diesem Anliegen verstärkt widmen können.
 
-### Premium Partners
+#### 🔐 Admin-Bereich
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+Der Vorstand hat Zugriff auf:
 
-## Contributing
+- **Kummerkasten-Einträge** einsehen und verwalten
+- **Sitzungsgruppen** erstellen, bearbeiten und verwalten
+- Zusätzliche Verwaltungsfunktionen
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 🛠️ Technologie-Stack
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- **Backend:** Laravel 9.x
+- **Frontend:** Blade Templates, Alpine.js, Tailwind CSS
+- **Datenbank:** MySQL / MariaDB
+- **Build Tool:** Vite
+- **Frontend UI:** Flowbite
+- **Authentication:** Laravel Sanctum (optional für API)
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 📋 Anforderungen
 
-## License
+- PHP >= 8.0.2
+- Composer
+- Node.js & npm
+- MySQL oder MariaDB
+- Git
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## 🚀 Installation
+
+### 1. Repository klonen
+
+```bash
+git clone <repository-url>
+cd idf-whisper-box
+```
+
+### 2. Abhängigkeiten installieren
+
+```bash
+composer install
+npm install
+```
+
+### 3. Umgebungsvariablen konfigurieren
+
+```bash
+cp .env.example .env
+```
+
+Bearbeite die `.env`-Datei und konfiguriere deine Datenbankverbindung:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=idf_toolbox
+DB_USERNAME=root
+DB_PASSWORD=your_password
+```
+
+### 4. Application Key generieren
+
+```bash
+php artisan key:generate
+```
+
+### 5. Datenbank-Migration ausführen
+
+```bash
+php artisan migrate
+```
+
+### 6. Frontend bauen
+
+```bash
+npm run build
+```
+
+Für Entwicklung:
+
+```bash
+npm run dev
+```
+
+### 7. Server starten
+
+```bash
+php artisan serve
+```
+
+Die Anwendung ist nun unter `http://localhost:8000` erreichbar.
+
+---
+
+## 📁 Projektstruktur
+
+```
+idf-whisper-box/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── AdminController.php
+│   │   │   ├── SubmissionController.php
+│   │   │   ├── MeetingGroupController.php
+│   │   │   └── ProfileController.php
+│   │   └── Requests/
+│   └── Models/
+│       ├── Submission.php
+│       ├── MeetingGroup.php
+│       └── User.php
+├── resources/
+│   ├── views/
+│   │   ├── create-submission.blade.php
+│   │   ├── admin/
+│   │   └── components/
+│   ├── css/
+│   └── js/
+├── routes/
+│   ├── web.php
+│   └── auth.php
+├── database/
+│   ├── migrations/
+│   └── seeders/
+└── config/
+```
+
+---
+
+## 🔗 API-Routen
+
+### Öffentliche Routen
+
+- `GET /` – Willkommensseite
+- `GET /create-submission` – Kummerkasten-Formular
+- `POST /store-submission` – Kummerkasten-Eintrag einreichen
+- `GET /submission-response` – Bestätigungsseite nach Einreichung
+
+### Admin-Routen (erfordert Admin-Authentifizierung)
+
+- `GET /admin` – Admin-Dashboard
+- `GET /admin/submissions` – Alle Kummerkasten-Einträge (mit Suche & Filterung)
+- `GET /admin/meeting-groups` – Sitzungsgruppen-Verwaltung
+- `POST /admin/meeting-groups` – Neue Sitzungsgruppe erstellen
+- `PATCH /admin/meeting-groups/{id}` – Sitzungsgruppe aktualisieren
+- `DELETE /admin/meeting-groups/{id}` – Sitzungsgruppe löschen
+
+---
+
+## 📊 Datenmodelle
+
+### Submission (Kummerkasten-Eintrag)
+
+```php
+- id (UUID)
+- title (string) – Betreff
+- text (text) – Inhalt
+- meeting_group_id (UUID, optional) – Zugeordnete Sitzungsgruppe
+- created_at (timestamp)
+- updated_at (timestamp)
+```
+
+### MeetingGroup (Sitzungsgruppe)
+
+```php
+- id (UUID)
+- name (string) – Gruppenname
+- description (text, optional) – Beschreibung
+- weekday (string) – Wochentag (z.B. 'monday', 'tuesday', ...)
+- time (time) – Uhrzeit des Treffens
+- is_public (boolean) – Ist die Gruppe öffentlich sichtbar?
+- created_at (timestamp)
+- updated_at (timestamp)
+```
+
+---
+
+## 🔐 Authentifizierung & Autorisierung
+
+Die Anwendung nutzt **Laravel Breeze** für die Benutzerauthentifizierung. Der Admin-Bereich ist durch ein `admin` Middleware geschützt, das nur authentifizierten Benutzern mit Admin-Rolle Zugriff gewährt.
+
+---
+
+## 🧪 Testen
+
+Tests können mit PHPUnit ausgeführt werden:
+
+```bash
+php artisan test
+```
+
+---
+
+## 💡 Best Practices
+
+- **Anonymität bewahren:** Der Kummerkasten speichert keine Benutzerinformationen
+- **CSRF-Schutz:** Alle Formulare sind durch CSRF-Token geschützt
+- **Input-Validierung:** Alle Eingaben werden validiert bevor sie gespeichert werden
+
+---
+
+## 📝 Lizenz
+
+Dieses Projekt ist unter der [MIT License](LICENSE) lizenziert.
+
+---
+
+## 📞 Support & Kontakt
+
+Für Fragen oder Unterstützung:
+
+- **Website:** [https://islamischedenkfabrik.de/](https://islamischedenkfabrik.de/)
+- **GitHub:** [AbdelazizTaoufik/idf-whisper-box](https://github.com/AbdelazizTaoufik/idf-toolbox)
+
+---
+
+**Status:** In Arbeit 🚀
