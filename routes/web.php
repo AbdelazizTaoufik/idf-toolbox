@@ -34,9 +34,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'getAdminView'])->name('admin.view');
     Route::get('/admin/submissions', [SubmissionController::class, 'getAdminSubmissionView'])
         ->name('admin.submission.view');
-    
+    // Benutzerverwaltung
     Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
     Route::post('/admin/users/{user}/toggle-admin', [UserController::class, 'toggleAdmin'])->name('admin.users.toggle-admin');
+    Route::post('/admin/users/{user}/toggle-verification', [UserController::class, 'toggleVerification'])->name('admin.users.toggle-verification');
+    Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 
     Route::get('/admin/meeting-groups', [MeetingGroupController::class, 'index'])
         ->name('meeting-groups.index');

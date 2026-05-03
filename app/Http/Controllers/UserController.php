@@ -57,4 +57,39 @@ class UserController extends Controller
         $status = $user->is_admin ? 'Admin-Rechte gewährt' : 'Admin-Rechte entzogen';
         return back()->with('success', "Benutzer {$user->name}: {$status}.");
     }
+
+    public function toggleVerification(User $user)
+    {
+        // Ein Admin sollte sich nicht selbst deaktivieren können
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'Sie können Ihren eigenen Aktivierungsstatus nicht ändern.');
+        }
+
+        if ($user->email_verified_at) {
+            $user->email_verified_at = null;
+            $status = 'deaktiviert';
+            // Wenn der User deaktiviert wird, entziehen wir ihm auch die Admin-Rechte (Sicherheitsregel aus vorigem Schritt)
+            $user->is_admin = false;
+        } else {
+            $user->email_verified_at = now();
+            $status = 'aktiviert';
+        }
+
+        $user->save();
+
+        return back()->with('success', "Benutzer {$user->name} wurde {$status}.");
+    }
+
+    public function destroy(User $user)
+    {
+        // Ein Admin kann sich nicht selbst löschen
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'Sie können sich nicht selbst löschen.');
+        }
+
+        $userName = $user->name;
+        $user->delete();
+
+        return back()->with('success', "Benutzer {$userName} wurde erfolgreich gelöscht.");
+    }
 }

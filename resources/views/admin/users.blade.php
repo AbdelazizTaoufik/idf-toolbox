@@ -127,18 +127,42 @@
                                         {{ $user->created_at->format('d.m.Y') }}
                                     </td>
                                     <td class="px-4 py-4 text-center">
-                                        @if($user->email_verified_at && $user->id !== auth()->id())
-                                            <form action="{{ route('admin.users.toggle-admin', $user) }}" method="POST" onsubmit="return confirm('Möchten Sie den Admin-Status für diesen Benutzer wirklich ändern?');">
-                                                @csrf
-                                                <button type="submit" class="inline-flex items-center justify-center px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded transition duration-200">
-                                                    {{ $user->is_admin ? 'Admin entziehen' : 'Admin machen' }}
-                                                </button>
-                                            </form>
-                                        @elseif($user->id === auth()->id())
-                                            <span class="text-xs text-gray-400 italic">Sie (Selbst)</span>
-                                        @else
-                                            <span class="text-xs text-gray-400 italic">Nicht aktiviert</span>
-                                        @endif
+                                        <div class="flex items-center justify-center gap-2">
+                                            @if($user->id !== auth()->id())
+                                                <!-- Aktivierung toggle -->
+                                                <form action="{{ route('admin.users.toggle-verification', $user) }}" method="POST" onsubmit="return confirm('Möchten Sie den Aktivierungsstatus für diesen Benutzer wirklich ändern?');">
+                                                    @csrf
+                                                    <button type="submit" class="inline-flex items-center justify-center p-2 {{ $user->email_verified_at ? 'text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:text-orange-300 dark:hover:bg-orange-900' : 'text-green-600 hover:text-green-700 hover:bg-green-50 dark:text-green-400 dark:hover:text-green-300 dark:hover:bg-green-900' }} rounded-lg transition duration-200" title="{{ $user->email_verified_at ? 'Deaktivieren' : 'Aktivieren' }}">
+                                                        @if($user->email_verified_at)
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                                                        @else
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                        @endif
+                                                    </button>
+                                                </form>
+
+                                                <!-- Admin toggle -->
+                                                @if($user->email_verified_at)
+                                                    <form action="{{ route('admin.users.toggle-admin', $user) }}" method="POST" onsubmit="return confirm('Möchten Sie den Admin-Status für diesen Benutzer wirklich ändern?');">
+                                                        @csrf
+                                                        <button type="submit" class="inline-flex items-center justify-center p-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition duration-200" title="{{ $user->is_admin ? 'Admin-Rechte entziehen' : 'Admin-Rechte gewähren' }}">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                                        </button>
+                                                    </form>
+                                                @endif
+
+                                                <!-- Löschen -->
+                                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('Möchten Sie diesen Benutzer wirklich unwiderruflich löschen?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="inline-flex items-center justify-center p-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg transition duration-200" title="Benutzer löschen">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <span class="text-xs text-gray-400 italic">Sie (Selbst)</span>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @empty

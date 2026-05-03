@@ -91,4 +91,56 @@ class UserControllerTest extends TestCase
         $response->assertSessionHas('error', 'Sie können sich nicht selbst die Admin-Rechte entziehen.');
         $this->assertTrue($admin->fresh()->is_admin);
     }
+
+    public function test_admin_can_toggle_user_verification()
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $targetUser = User::factory()->create(['email_verified_at' => null]);
+
+        // Aktivieren
+        $response = $this->withoutMiddleware(VerifyCsrfToken::class)
+            ->actingAs($admin)
+            ->from(route('admin.users.index'))
+            ->post(route('admin.users.toggle-verification', $targetUser));
+
+        $response->assertRedirect(route('admin.users.index'));
+        $this->assertNotNull($targetUser->fresh()->email_verified_at);
+
+        // Deaktivieren
+        $response = $this->withoutMiddleware(VerifyCsrfToken::class)
+            ->actingAs($admin)
+            ->from(route('admin.users.index'))
+            ->post(route('admin.users.toggle-verification', $targetUser));
+
+        $response->assertRedirect(route('admin.users.index'));
+        $this->assertNull($targetUser->fresh()->email_verified_at);
+    }
+
+    public function test_admin_can_delete_user()
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $targetUser = User::factory()->create();
+
+        $response = $this->withoutMiddleware(VerifyCsrfToken::class)
+            ->actingAs($admin)
+            ->from(route('admin.users.index'))
+            ->delete(route('admin.users.destroy', $targetUser));
+
+        $response->assertRedirect(route('admin.users.index'));
+        $this->assertDatabaseMissing('users', ['id' => $targetUser->id]);
+    }
+
+    public function test_admin_cannot_delete_themselves()
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $response = $this->withoutMiddleware(VerifyCsrfToken::class)
+            ->actingAs($admin)
+            ->from(route('admin.users.index'))
+            ->delete(route('admin.users.destroy', $admin));
+
+        $response->assertRedirect(route('admin.users.index'));
+        $response->assertSessionHas('error', 'Sie können sich nicht selbst löschen.');
+        $this->assertDatabaseHas('users', ['id' => $admin->id]);
+    }
 }

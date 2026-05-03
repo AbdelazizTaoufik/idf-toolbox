@@ -9,6 +9,12 @@
     <body class="bg-gradient-to-br from-white via-red-200 to-white dark:bg-gradient-to-br dark:from-neutral-900 dark:via-red-900 dark:to-neutral-900">
         <x-navbar/>
         <div class="max-w-screen-lg mx-auto mt-8 fade-in px-4">
+            <div class="mb-6">
+                <a href="{{ route('admin.view') }}" class="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 font-medium flex items-center gap-2">
+                    ← Zurück zur Admin-Seite
+                </a>
+            </div>
+
             <form method="GET" action="{{ route('admin.submission.view') }}" class="bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-6 mb-8">
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
                     <!-- Search -->
