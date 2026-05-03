@@ -11,7 +11,7 @@
         <div class="flex flex-col items-center justify-center flex-1 py-12 px-2">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-4xl">
             <x-admin-card
-                url="{{ route('admin.submission.view') }}"
+                url="{{ route('admin.users.index') }}"
                 svg="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
                 title="Benutzerverwaltung"
                 description="Verwalte alle Benutzer und deren Rechte."

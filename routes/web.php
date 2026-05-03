@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MeetingGroupController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SubmissionController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,6 +35,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/submissions', [SubmissionController::class, 'getAdminSubmissionView'])
         ->name('admin.submission.view');
     
+    Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
+    Route::post('/admin/users/{user}/toggle-admin', [UserController::class, 'toggleAdmin'])->name('admin.users.toggle-admin');
+
     Route::get('/admin/meeting-groups', [MeetingGroupController::class, 'index'])
         ->name('meeting-groups.index');
     Route::post('/admin/meeting-groups', [MeetingGroupController::class, 'store'])
