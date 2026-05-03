@@ -11,7 +11,14 @@
             {{-- Desktop: Auth-Bereich (ab md sichtbar) --}}
             <div class="hidden md:flex items-center space-x-4 text-white">
                 @guest
-                    {{-- evtl. Login/Register Links --}}
+                    <a href="{{ route('login') }}"
+                       class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-xl transition font-semibold">
+                        Login
+                    </a>
+                    <a href="{{ route('register') }}"
+                       class="px-4 py-2 bg-red-800 hover:bg-red-900 rounded-xl transition font-semibold">
+                        Registrieren
+                    </a>
                 @endguest
 
                 @auth
@@ -29,8 +36,7 @@
                 @endauth
             </div>
 
-            {{-- Mobile: Hamburger (nur auf kleinen Bildschirmen) - nur wenn eingeloggt --}}
-            @auth
+            {{-- Mobile: Hamburger (nur auf kleinen Bildschirmen) --}}
             <button id="mobile-menu-button"
                     class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-red-800 focus:outline-none"
                     aria-controls="mobile-menu" aria-expanded="false">
@@ -48,30 +54,38 @@
                           d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
-            @endauth
         </div>
     </div>
 
     {{-- Mobile menu (hidden by default, sichtbar nach Toggle) --}}
-    @auth
     <div id="mobile-menu" class="md:hidden hidden px-4 pb-4">
         <div class="flex flex-col space-y-3 bg-red-900 rounded-b-2xl p-4 text-white">
-            {{-- evtl. Login/Register Links für Mobil (nicht nötig wenn nur für Auth) --}}
+            @guest
+                <a href="{{ route('login') }}"
+                   class="w-full text-center px-4 py-2 bg-red-600 hover:bg-red-700 rounded-xl transition font-semibold">
+                    Login
+                </a>
+                <a href="{{ route('register') }}"
+                   class="w-full text-center px-4 py-2 bg-red-800 hover:bg-red-900 rounded-xl transition font-semibold">
+                    Registrieren
+                </a>
+            @endguest
 
-            <div class="font-medium">
-                {{ Auth::user()->name }}
-            </div>
+            @auth
+                <div class="font-medium">
+                    {{ Auth::user()->name }}
+                </div>
 
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit"
-                        class="w-full text-left px-4 py-2 bg-red-700 hover:bg-red-800 rounded-xl transition font-semibold">
-                    Logout
-                </button>
-            </form>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit"
+                            class="w-full text-left px-4 py-2 bg-red-700 hover:bg-red-800 rounded-xl transition font-semibold">
+                        Logout
+                    </button>
+                </form>
+            @endauth
         </div>
     </div>
-    @endauth
 </nav>
 
 <script>
