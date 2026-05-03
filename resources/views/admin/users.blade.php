@@ -118,7 +118,7 @@
                                     </td>
                                     <td class="px-4 py-4 text-center">
                                         @if($user->is_admin)
-                                            <span class="inline-block px-2 py-1 bg-red-200 dark:bg-red-900 text-red-900 dark:text-red-100 text-xs font-semibold rounded">Ja</span>
+                                            <span class="inline-block px-2 py-1 bg-green-200 dark:bg-green-900 text-green-900 dark:text-green-100 text-xs font-semibold rounded">Ja</span>
                                         @else
                                             <span class="inline-block px-2 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-semibold rounded">Nein</span>
                                         @endif
@@ -129,7 +129,6 @@
                                     <td class="px-4 py-4 text-center">
                                         <div class="flex items-center justify-center gap-2">
                                             @if($user->id !== auth()->id())
-                                                <!-- Aktivierung toggle -->
                                                 <form action="{{ route('admin.users.toggle-verification', $user) }}" method="POST" onsubmit="return confirm('Möchten Sie den Aktivierungsstatus für diesen Benutzer wirklich ändern?');">
                                                     @csrf
                                                     <button type="submit" class="inline-flex items-center justify-center p-2 {{ $user->email_verified_at ? 'text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:text-orange-300 dark:hover:bg-orange-900' : 'text-green-600 hover:text-green-700 hover:bg-green-50 dark:text-green-400 dark:hover:text-green-300 dark:hover:bg-green-900' }} rounded-lg transition duration-200" title="{{ $user->email_verified_at ? 'Deaktivieren' : 'Aktivieren' }}">
@@ -141,7 +140,6 @@
                                                     </button>
                                                 </form>
 
-                                                <!-- Admin toggle -->
                                                 @if($user->email_verified_at)
                                                     <form action="{{ route('admin.users.toggle-admin', $user) }}" method="POST" onsubmit="return confirm('Möchten Sie den Admin-Status für diesen Benutzer wirklich ändern?');">
                                                         @csrf
@@ -151,7 +149,6 @@
                                                     </form>
                                                 @endif
 
-                                                <!-- Löschen -->
                                                 <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('Möchten Sie diesen Benutzer wirklich unwiderruflich löschen?');">
                                                     @csrf
                                                     @method('DELETE')
