@@ -32,6 +32,14 @@ Route::get('/create-submission', [SubmissionController::class, 'getCreateSubmiss
 
 Route::get('/wochenplan', [MeetingGroupController::class, 'schedule'])->name('schedule.index');
 
+Route::get('/impressum', function () {
+    return view('impressum');
+})->name('impressum');
+
+Route::get('/datenschutz', function () {
+    return view('datenschutz');
+})->name('datenschutz');
+
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'getAdminView'])->name('admin.view');
 
