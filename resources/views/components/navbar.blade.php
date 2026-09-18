@@ -1,9 +1,9 @@
-<nav class="bg-red-900 border-gray-200 m-2 rounded-2xl">
-    <div class="flex items-center justify-between mx-auto max-w-screen-xl p-4">
+<nav class="bg-gradient-to-r from-red-950 via-red-900 to-red-950 shadow-lg sticky top-0 z-40 border-b border-red-800/50">
+    <div class="flex items-center justify-between mx-auto max-w-screen-xl px-4 md:px-6 py-3">
         {{-- Logo --}}
         <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
             <img src="{{ asset('storage/images/idf-logo.png') }}"
-                 class="h-12 md:h-16 rounded-md transition duration-300 ease-in-out hover:scale-110 active:scale-90"
+                 class="h-10 md:h-14 rounded-md transition duration-300 ease-in-out hover:scale-110 active:scale-90"
                  alt="Islamische Denkfabrik Logo" />
         </a>
 
@@ -59,7 +59,7 @@
 
     {{-- Mobile menu (hidden by default, sichtbar nach Toggle) --}}
     <div id="mobile-menu" class="md:hidden hidden px-4 pb-4">
-        <div class="flex flex-col space-y-3 bg-red-900 rounded-b-2xl p-4 text-white">
+        <div class="flex flex-col space-y-3 bg-red-950/60 rounded-xl p-4 text-white">
             @guest
                 <a href="{{ route('login') }}"
                    class="w-full text-center px-4 py-2 bg-red-600 hover:bg-red-700 rounded-xl transition font-semibold">
