@@ -7,6 +7,22 @@ use Illuminate\Http\Request;
 
 class MeetingGroupController extends Controller
 {
+    /**
+     * Public weekly schedule of all publicly visible meeting groups.
+     * Accessible to everyone, including guests.
+     */
+    public function schedule()
+    {
+        $weekdays = MeetingGroup::getWeekdays();
+
+        $meetingGroups = MeetingGroup::where('is_public', true)
+            ->orderBy('time')
+            ->get()
+            ->groupBy('weekday');
+
+        return view('meeting-groups-schedule', compact('meetingGroups', 'weekdays'));
+    }
+
     public function index()
     {
         $meetingGroups = MeetingGroup::orderBy('name')->paginate(10);

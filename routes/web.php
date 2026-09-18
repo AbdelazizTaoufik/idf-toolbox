@@ -30,6 +30,8 @@ Route::get('/submission-response', function () {
 Route::get('/create-submission', [SubmissionController::class, 'getCreateSubmissionView'])
     ->name('create.submission.view');
 
+Route::get('/wochenplan', [MeetingGroupController::class, 'schedule'])->name('schedule.index');
+
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'getAdminView'])->name('admin.view');
 
