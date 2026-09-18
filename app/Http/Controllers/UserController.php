@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdminModule;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -9,7 +10,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::query();
+        $query = User::query()->with('adminModules');
 
         if ($request->filled('search')) {
             $search = $request->input('search');
@@ -37,8 +38,9 @@ class UserController extends Controller
         }
 
         $users = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
+        $adminModules = AdminModule::all();
 
-        return view('admin.users', compact('users'));
+        return view('admin.users', compact('users', 'adminModules'));
     }
 
     public function toggleAdmin(User $user)
@@ -56,6 +58,23 @@ class UserController extends Controller
 
         $status = $user->is_admin ? 'Admin-Rechte gewährt' : 'Admin-Rechte entzogen';
         return back()->with('success', "Benutzer {$user->name}: {$status}.");
+    }
+
+    public function toggleModuleAccess(Request $request, User $user)
+    {
+        if (!$user->is_admin) {
+            return back()->with('error', 'Berechtigungen können nur Admins zugewiesen werden.');
+        }
+
+        $validated = $request->validate([
+            'module' => 'required|string|in:' . implode(',', array_keys(AdminModule::LABELS)),
+        ]);
+
+        $module = AdminModule::where('key', $validated['module'])->firstOrFail();
+        $user->adminModules()->toggle($module->id);
+
+        $status = $user->adminModules()->where('key', $module->key)->exists() ? 'zugewiesen' : 'entzogen';
+        return back()->with('success', "Berechtigung \"{$module->label}\" wurde {$user->name} {$status}.");
     }
 
     public function toggleVerification(User $user)

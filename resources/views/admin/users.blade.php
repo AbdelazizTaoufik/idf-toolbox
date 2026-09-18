@@ -89,6 +89,7 @@
                                 <th class="px-4 py-3 text-left font-semibold">E-Mail</th>
                                 <th class="px-4 py-3 text-center font-semibold">Aktiviert</th>
                                 <th class="px-4 py-3 text-center font-semibold">Admin</th>
+                                <th class="px-4 py-3 text-left font-semibold">Berechtigungen</th>
                                 <th class="px-4 py-3 text-left font-semibold">Erstellt am</th>
                                 <th class="px-4 py-3 text-center font-semibold">Aktionen</th>
                             </tr>
@@ -121,6 +122,23 @@
                                             <span class="inline-block px-2 py-1 bg-green-200 dark:bg-green-900 text-green-900 dark:text-green-100 text-xs font-semibold rounded">Ja</span>
                                         @else
                                             <span class="inline-block px-2 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-semibold rounded">Nein</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        @if($user->is_admin)
+                                            <div class="flex flex-col gap-1">
+                                                @foreach($adminModules as $module)
+                                                    <form action="{{ route('admin.users.toggle-module', $user) }}" method="POST">
+                                                        @csrf
+                                                        <input type="hidden" name="module" value="{{ $module->key }}">
+                                                        <button type="submit" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded transition {{ $user->adminModules->contains('key', $module->key) ? 'bg-green-200 dark:bg-green-900 text-green-900 dark:text-green-100 hover:bg-green-300 dark:hover:bg-green-800' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600' }}" title="{{ $module->label }} {{ $user->adminModules->contains('key', $module->key) ? 'entziehen' : 'zuweisen' }}">
+                                                            {{ $module->label }}
+                                                        </button>
+                                                    </form>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <span class="text-xs text-gray-400 italic">Nur für Admins</span>
                                         @endif
                                     </td>
                                     <td class="px-4 py-4 text-gray-600 dark:text-gray-400">
@@ -164,7 +182,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                                    <td colspan="7" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                                         Keine Benutzer gefunden.
                                     </td>
                                 </tr>

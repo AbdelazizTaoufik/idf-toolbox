@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\AdminModule;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -46,7 +47,11 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($users as $user) {
-            \App\Models\User::create($user);
+            $createdUser = \App\Models\User::create($user);
+
+            if ($createdUser->is_admin) {
+                $createdUser->adminModules()->sync(AdminModule::all());
+            }
         }
     }
 }

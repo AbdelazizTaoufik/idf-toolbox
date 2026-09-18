@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -51,5 +52,19 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendEmailVerificationNotification()
     {
         $this->notify(new VerifyEmail);
+    }
+
+    public function adminModules(): BelongsToMany
+    {
+        return $this->belongsToMany(AdminModule::class, 'admin_module_users')->withTimestamps();
+    }
+
+    /**
+     * Whether the user has been granted access to the given admin module (see AdminModule::LABELS keys).
+     * Only meaningful for admins - non-admins never pass the "admin" middleware regardless.
+     */
+    public function hasModuleAccess(string $key): bool
+    {
+        return $this->is_admin && $this->adminModules->contains('key', $key);
     }
 }
