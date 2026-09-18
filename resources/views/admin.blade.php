@@ -1,16 +1,16 @@
-<!DOCTYPE html>
-<html lang="de">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin</title>
-    @vite(['resources/css/app.css','resources/js/app.js'])
-  </head>
-  <body class="bg-gradient-to-br from-white via-red-200 to-white dark:bg-gradient-to-br dark:from-neutral-900 dark:via-red-900 dark:to-neutral-900 min-h-screen flex flex-col justify-between">
-    <x-navbar/>
-        <div class="flex flex-col items-center justify-center flex-1 py-12 px-2">
+<x-layout title="Admin">
+    <div class="flex flex-col items-center justify-center py-16 px-4">
         @php $user = auth()->user(); @endphp
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-4xl">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+            <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-200 text-sm font-semibold">
+                Admin-Bereich
+            </span>
+            <h1 class="mt-4 text-3xl sm:text-4xl font-extrabold tracking-tight text-stone-900 dark:text-white">
+                Willkommen zurück
+            </h1>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
             @if($user->hasModuleAccess(\App\Models\AdminModule::USERS))
                 <x-admin-card
                     url="{{ route('admin.users.index') }}"
@@ -39,12 +39,10 @@
             @endif
 
             @unless($user->hasModuleAccess(\App\Models\AdminModule::USERS) || $user->hasModuleAccess(\App\Models\AdminModule::SUBMISSIONS) || $user->hasModuleAccess(\App\Models\AdminModule::MEETING_GROUPS))
-                <p class="text-gray-600 dark:text-gray-300 md:col-span-3 text-center">
+                <p class="text-stone-600 dark:text-stone-300 md:col-span-3 text-center">
                     Ihnen wurden noch keine Berechtigungen zugewiesen. Bitte wenden Sie sich an einen Administrator mit Zugriff auf die Benutzerverwaltung.
                 </p>
             @endunless
         </div>
-        </div>
-    <x-footer/>
-  </body>
-</html>
+    </div>
+</x-layout>

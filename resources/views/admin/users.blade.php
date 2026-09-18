@@ -1,204 +1,190 @@
-<!DOCTYPE html>
-<html lang="de">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Benutzerverwaltung - Admin</title>
-        @vite(['resources/css/app.css','resources/js/app.js'])
-    </head>
-    
-    <body class="bg-gradient-to-br from-white via-red-200 to-white dark:bg-gradient-to-br dark:from-neutral-900 dark:via-red-900 dark:to-neutral-900 min-h-screen flex flex-col">
-        <x-navbar/>
-        
-        <div class="max-w-screen-xl mx-auto mt-8 px-4 flex-1 w-full">
-            <!-- Zurück zum Admin -->
-            <div class="mb-6">
-                <a href="{{ route('admin.view') }}" class="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 font-medium flex items-center gap-2">
-                    ← Zurück zur Admin-Seite
-                </a>
-            </div>
-
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Benutzerverwaltung</h1>
-
-            <!-- Filter & Suche -->
-            <form method="GET" action="{{ route('admin.users.index') }}" class="bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-6 mb-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                    <!-- Suche -->
-                    <div class="lg:col-span-2">
-                        <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Suche (Name, E-Mail)</label>
-                        <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Suchen..." class="w-full px-4 py-2 border border-red-300 dark:border-red-800 rounded-lg bg-gray-50 dark:bg-neutral-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500">
-                    </div>
-
-                    <!-- Filter: Admin -->
-                    <div>
-                        <label for="is_admin" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rolle</label>
-                        <select name="is_admin" id="is_admin" class="w-full px-4 py-2 border border-red-300 dark:border-red-800 rounded-lg bg-gray-50 dark:bg-neutral-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500">
-                            <option value="">Alle Rollen</option>
-                            <option value="1" {{ request('is_admin') === '1' ? 'selected' : '' }}>Admin</option>
-                            <option value="0" {{ request('is_admin') === '0' ? 'selected' : '' }}>Benutzer</option>
-                        </select>
-                    </div>
-
-                    <!-- Filter: Status -->
-                    <div>
-                        <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
-                        <select name="status" id="status" class="w-full px-4 py-2 border border-red-300 dark:border-red-800 rounded-lg bg-gray-50 dark:bg-neutral-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500">
-                            <option value="">Alle Status</option>
-                            <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Aktiviert</option>
-                            <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inaktiv</option>
-                        </select>
-                    </div>
-
-                    <!-- Per Page -->
-                    <div>
-                        <label for="per_page" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Anzeigen</label>
-                        <select name="per_page" id="per_page" class="w-full px-4 py-2 border border-red-300 dark:border-red-800 rounded-lg bg-gray-50 dark:bg-neutral-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500">
-                            <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
-                            <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
-                            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="flex justify-end gap-2 mt-4">
-                    <a href="{{ route('admin.users.index') }}" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition duration-300 font-medium">Zurücksetzen</a>
-                    <button type="submit" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition duration-300 font-medium">Filtern</button>
-                </div>
-            </form>
-
-            @if(session('success'))
-                <div class="mb-6 p-4 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-100 rounded-lg flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if(session('error'))
-                <div class="mb-6 p-4 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-100 rounded-lg flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
-                    {{ session('error') }}
-                </div>
-            @endif
-
-            <div class="bg-white dark:bg-neutral-800 rounded-lg shadow-lg overflow-hidden mb-8">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead class="bg-red-900 text-white">
-                            <tr>
-                                <th class="px-4 py-3 text-left font-semibold">Name</th>
-                                <th class="px-4 py-3 text-left font-semibold">E-Mail</th>
-                                <th class="px-4 py-3 text-center font-semibold">Aktiviert</th>
-                                <th class="px-4 py-3 text-center font-semibold">Admin</th>
-                                <th class="px-4 py-3 text-left font-semibold">Berechtigungen</th>
-                                <th class="px-4 py-3 text-left font-semibold">Erstellt am</th>
-                                <th class="px-4 py-3 text-center font-semibold">Aktionen</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-red-200 dark:divide-red-900">
-                            @forelse($users as $user)
-                                <tr class="hover:bg-red-50 dark:hover:bg-red-950 transition">
-                                    <td class="px-4 py-4 font-medium text-gray-900 dark:text-white">
-                                        {{ $user->name }}
-                                    </td>
-                                    <td class="px-4 py-4 text-gray-600 dark:text-gray-400">
-                                        {{ $user->email }}
-                                    </td>
-                                    <td class="px-4 py-4 text-center">
-                                        @if($user->email_verified_at)
-                                            <div class="flex flex-col items-center">
-                                                <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                </svg>
-                                                <span class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $user->email_verified_at->format('d.m.Y H:i') }}</span>
-                                            </div>
-                                        @else
-                                            <svg class="w-6 h-6 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                            </svg>
-                                        @endif
-                                    </td>
-                                    <td class="px-4 py-4 text-center">
-                                        @if($user->is_admin)
-                                            <span class="inline-block px-2 py-1 bg-green-200 dark:bg-green-900 text-green-900 dark:text-green-100 text-xs font-semibold rounded">Ja</span>
-                                        @else
-                                            <span class="inline-block px-2 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-semibold rounded">Nein</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        @if($user->is_admin)
-                                            <div class="flex flex-col gap-1">
-                                                @foreach($adminModules as $module)
-                                                    <form action="{{ route('admin.users.toggle-module', $user) }}" method="POST">
-                                                        @csrf
-                                                        <input type="hidden" name="module" value="{{ $module->key }}">
-                                                        <button type="submit" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded transition {{ $user->adminModules->contains('key', $module->key) ? 'bg-green-200 dark:bg-green-900 text-green-900 dark:text-green-100 hover:bg-green-300 dark:hover:bg-green-800' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600' }}" title="{{ $module->label }} {{ $user->adminModules->contains('key', $module->key) ? 'entziehen' : 'zuweisen' }}">
-                                                            {{ $module->label }}
-                                                        </button>
-                                                    </form>
-                                                @endforeach
-                                            </div>
-                                        @else
-                                            <span class="text-xs text-gray-400 italic">Nur für Admins</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-4 py-4 text-gray-600 dark:text-gray-400">
-                                        {{ $user->created_at->format('d.m.Y') }}
-                                    </td>
-                                    <td class="px-4 py-4 text-center">
-                                        <div class="flex items-center justify-center gap-2">
-                                            @if($user->id !== auth()->id())
-                                                <form action="{{ route('admin.users.toggle-verification', $user) }}" method="POST" onsubmit="return confirm('Möchten Sie den Aktivierungsstatus für diesen Benutzer wirklich ändern?');">
-                                                    @csrf
-                                                    <button type="submit" class="inline-flex items-center justify-center p-2 {{ $user->email_verified_at ? 'text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:text-orange-300 dark:hover:bg-orange-900' : 'text-green-600 hover:text-green-700 hover:bg-green-50 dark:text-green-400 dark:hover:text-green-300 dark:hover:bg-green-900' }} rounded-lg transition duration-200" title="{{ $user->email_verified_at ? 'Deaktivieren' : 'Aktivieren' }}">
-                                                        @if($user->email_verified_at)
-                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
-                                                        @else
-                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                                        @endif
-                                                    </button>
-                                                </form>
-
-                                                @if($user->email_verified_at)
-                                                    <form action="{{ route('admin.users.toggle-admin', $user) }}" method="POST" onsubmit="return confirm('Möchten Sie den Admin-Status für diesen Benutzer wirklich ändern?');">
-                                                        @csrf
-                                                        <button type="submit" class="inline-flex items-center justify-center p-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition duration-200" title="{{ $user->is_admin ? 'Admin-Rechte entziehen' : 'Admin-Rechte gewähren' }}">
-                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                                                        </button>
-                                                    </form>
-                                                @endif
-
-                                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('Möchten Sie diesen Benutzer wirklich unwiderruflich löschen?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="inline-flex items-center justify-center p-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg transition duration-200" title="Benutzer löschen">
-                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                                    </button>
-                                                </form>
-                                            @else
-                                                <span class="text-xs text-gray-400 italic">Sie (Selbst)</span>
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                                        Keine Benutzer gefunden.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            @if($users->hasPages())
-                <div class="mt-6 flex justify-center mb-8">
-                    {{ $users->links('components.custom-pagination') }}
-                </div>
-            @endif
+<x-layout title="Benutzerverwaltung">
+    <div class="max-w-screen-xl mx-auto mt-8 px-4 pb-12">
+        <!-- Zurück zum Admin -->
+        <div class="mb-6">
+            <a href="{{ route('admin.view') }}" class="text-brand-600 hover:text-brand-700 dark:text-brand-300 dark:hover:text-brand-200 font-medium flex items-center gap-2">
+                ← Zurück zur Admin-Seite
+            </a>
         </div>
 
-        <x-footer/>
-    </body>
-</html>
+        <h1 class="text-2xl font-extrabold tracking-tight text-stone-900 dark:text-white mb-6">Benutzerverwaltung</h1>
+
+        <!-- Filter & Suche -->
+        <form method="GET" action="{{ route('admin.users.index') }}" class="bg-white dark:bg-stone-800 rounded-2xl shadow-warm border border-stone-100 dark:border-stone-700 p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <!-- Suche -->
+                <div class="lg:col-span-2">
+                    <label for="search" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Suche (Name, E-Mail)</label>
+                    <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Suchen..." class="w-full px-4 py-2 border border-stone-200 dark:border-stone-600 rounded-xl bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                </div>
+
+                <!-- Filter: Admin -->
+                <div>
+                    <label for="is_admin" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Rolle</label>
+                    <select name="is_admin" id="is_admin" class="w-full px-4 py-2 border border-stone-200 dark:border-stone-600 rounded-xl bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                        <option value="">Alle Rollen</option>
+                        <option value="1" {{ request('is_admin') === '1' ? 'selected' : '' }}>Admin</option>
+                        <option value="0" {{ request('is_admin') === '0' ? 'selected' : '' }}>Benutzer</option>
+                    </select>
+                </div>
+
+                <!-- Filter: Status -->
+                <div>
+                    <label for="status" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Status</label>
+                    <select name="status" id="status" class="w-full px-4 py-2 border border-stone-200 dark:border-stone-600 rounded-xl bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                        <option value="">Alle Status</option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Aktiviert</option>
+                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inaktiv</option>
+                    </select>
+                </div>
+
+                <!-- Per Page -->
+                <div>
+                    <label for="per_page" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Anzeigen</label>
+                    <select name="per_page" id="per_page" class="w-full px-4 py-2 border border-stone-200 dark:border-stone-600 rounded-xl bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                        <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
+                        <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
+                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 mt-4">
+                <a href="{{ route('admin.users.index') }}" class="px-4 py-2 bg-stone-200 dark:bg-stone-600 text-stone-700 dark:text-white rounded-full hover:bg-stone-300 dark:hover:bg-stone-500 transition duration-300 font-medium">Zurücksetzen</a>
+                <button type="submit" class="px-6 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-full transition duration-300 font-medium">Filtern</button>
+            </div>
+        </form>
+
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-100 rounded-2xl flex items-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-6 p-4 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-100 rounded-2xl flex items-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <div class="bg-white dark:bg-stone-800 rounded-2xl shadow-warm border border-stone-100 dark:border-stone-700 overflow-hidden mb-8">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-brand-50 dark:bg-brand-900/30 text-brand-800 dark:text-brand-200 border-b-2 border-brand-200 dark:border-brand-800">
+                        <tr>
+                            <th class="px-4 py-3 text-left font-semibold">Name</th>
+                            <th class="px-4 py-3 text-left font-semibold">E-Mail</th>
+                            <th class="px-4 py-3 text-center font-semibold">Aktiviert</th>
+                            <th class="px-4 py-3 text-center font-semibold">Admin</th>
+                            <th class="px-4 py-3 text-left font-semibold">Berechtigungen</th>
+                            <th class="px-4 py-3 text-left font-semibold">Erstellt am</th>
+                            <th class="px-4 py-3 text-center font-semibold">Aktionen</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-stone-100 dark:divide-stone-700">
+                        @forelse($users as $user)
+                            <tr class="hover:bg-stone-50 dark:hover:bg-stone-700/50 transition">
+                                <td class="px-4 py-4 font-medium text-stone-900 dark:text-white">
+                                    {{ $user->name }}
+                                </td>
+                                <td class="px-4 py-4 text-stone-600 dark:text-stone-400">
+                                    {{ $user->email }}
+                                </td>
+                                <td class="px-4 py-4 text-center">
+                                    @if($user->email_verified_at)
+                                        <div class="flex flex-col items-center">
+                                            <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                            <span class="text-xs text-stone-500 dark:text-stone-400 mt-1">{{ $user->email_verified_at->format('d.m.Y H:i') }}</span>
+                                        </div>
+                                    @else
+                                        <svg class="w-6 h-6 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-4 text-center">
+                                    @if($user->is_admin)
+                                        <span class="inline-block px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 text-xs font-semibold rounded-full">Ja</span>
+                                    @else
+                                        <span class="inline-block px-2 py-1 bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-semibold rounded-full">Nein</span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-4">
+                                    @if($user->is_admin)
+                                        <div class="flex flex-col gap-1">
+                                            @foreach($adminModules as $module)
+                                                <form action="{{ route('admin.users.toggle-module', $user) }}" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="module" value="{{ $module->key }}">
+                                                    <button type="submit" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-full transition {{ $user->adminModules->contains('key', $module->key) ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 hover:bg-green-200 dark:hover:bg-green-800' : 'bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600' }}" title="{{ $module->label }} {{ $user->adminModules->contains('key', $module->key) ? 'entziehen' : 'zuweisen' }}">
+                                                        {{ $module->label }}
+                                                    </button>
+                                                </form>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <span class="text-xs text-stone-400 italic">Nur für Admins</span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-4 text-stone-600 dark:text-stone-400">
+                                    {{ $user->created_at->format('d.m.Y') }}
+                                </td>
+                                <td class="px-4 py-4 text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        @if($user->id !== auth()->id())
+                                            <form action="{{ route('admin.users.toggle-verification', $user) }}" method="POST" onsubmit="return confirm('Möchten Sie den Aktivierungsstatus für diesen Benutzer wirklich ändern?');">
+                                                @csrf
+                                                <button type="submit" class="inline-flex items-center justify-center p-2 {{ $user->email_verified_at ? 'text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:hover:text-orange-300 dark:hover:bg-orange-900' : 'text-green-600 hover:text-green-700 hover:bg-green-50 dark:text-green-400 dark:hover:text-green-300 dark:hover:bg-green-900' }} rounded-full transition duration-200" title="{{ $user->email_verified_at ? 'Deaktivieren' : 'Aktivieren' }}">
+                                                    @if($user->email_verified_at)
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                                                    @else
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                    @endif
+                                                </button>
+                                            </form>
+
+                                            @if($user->email_verified_at)
+                                                <form action="{{ route('admin.users.toggle-admin', $user) }}" method="POST" onsubmit="return confirm('Möchten Sie den Admin-Status für diesen Benutzer wirklich ändern?');">
+                                                    @csrf
+                                                    <button type="submit" class="inline-flex items-center justify-center p-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-full transition duration-200" title="{{ $user->is_admin ? 'Admin-Rechte entziehen' : 'Admin-Rechte gewähren' }}">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                                    </button>
+                                                </form>
+                                            @endif
+
+                                            <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('Möchten Sie diesen Benutzer wirklich unwiderruflich löschen?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="inline-flex items-center justify-center p-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900 rounded-full transition duration-200" title="Benutzer löschen">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span class="text-xs text-stone-400 italic">Sie (Selbst)</span>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="px-4 py-8 text-center text-stone-500 dark:text-stone-400">
+                                    Keine Benutzer gefunden.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        @if($users->hasPages())
+            <div class="mt-6 flex justify-center mb-8">
+                {{ $users->links('components.custom-pagination') }}
+            </div>
+        @endif
+    </div>
+</x-layout>

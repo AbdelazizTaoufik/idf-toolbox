@@ -2,10 +2,10 @@
     <nav role="navigation" aria-label="Pagination Navigation" class="flex items-center justify-center mt-4 space-x-2">
         {{-- Vorherige Seite --}}
         @if ($paginator->onFirstPage())
-            <span class="px-3 py-1 text-gray-400 bg-gray-200 rounded-2xl cursor-not-allowed">←</span>
+            <span class="px-3 py-1 text-stone-400 bg-stone-100 dark:bg-stone-800 dark:text-stone-600 rounded-2xl cursor-not-allowed">←</span>
         @else
-            <a href="{{ $paginator->previousPageUrl() }}" 
-               class="px-3 py-1 text-white bg-red-900 hover:bg-red-800 rounded-2xl transition duration-300">
+            <a href="{{ $paginator->previousPageUrl() }}"
+               class="px-3 py-1 text-white bg-brand-600 hover:bg-brand-700 rounded-2xl transition duration-300">
                 ←
             </a>
         @endif
@@ -13,16 +13,16 @@
         {{-- Seitenzahlen --}}
         @foreach ($elements as $element)
             @if (is_string($element))
-                <span class="px-3 py-1 text-gray-400 bg-gray-200 rounded-2xl">{{ $element }}</span>
+                <span class="px-3 py-1 text-stone-400 bg-stone-100 dark:bg-stone-800 dark:text-stone-600 rounded-2xl">{{ $element }}</span>
             @endif
 
             @if (is_array($element))
                 @foreach ($element as $page => $url)
                     @if ($page == $paginator->currentPage())
-                        <span class="px-3 py-1 text-white bg-red-700 rounded-2xl">{{ $page }}</span>
+                        <span class="px-3 py-1 text-white bg-brand-800 rounded-2xl">{{ $page }}</span>
                     @else
-                        <a href="{{ $url }}" 
-                           class="px-3 py-1 text-white bg-red-900 hover:bg-red-800 rounded-2xl transition duration-300">
+                        <a href="{{ $url }}"
+                           class="px-3 py-1 text-white bg-brand-600 hover:bg-brand-700 rounded-2xl transition duration-300">
                             {{ $page }}
                         </a>
                     @endif
@@ -32,12 +32,12 @@
 
         {{-- Nächste Seite --}}
         @if ($paginator->hasMorePages())
-            <a href="{{ $paginator->nextPageUrl() }}" 
-               class="px-3 py-1 text-white bg-red-900 hover:bg-red-800 rounded-2xl transition duration-300">
+            <a href="{{ $paginator->nextPageUrl() }}"
+               class="px-3 py-1 text-white bg-brand-600 hover:bg-brand-700 rounded-2xl transition duration-300">
                 →
             </a>
         @else
-            <span class="px-3 py-1 text-gray-400 bg-gray-200 rounded-2xl cursor-not-allowed">→</span>
+            <span class="px-3 py-1 text-stone-400 bg-stone-100 dark:bg-stone-800 dark:text-stone-600 rounded-2xl cursor-not-allowed">→</span>
         @endif
     </nav>
 @endif
