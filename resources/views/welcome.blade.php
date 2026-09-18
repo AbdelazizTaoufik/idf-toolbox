@@ -30,6 +30,18 @@
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
             </a>
 
+            @if(Auth::check() && Auth::user()->hasVerifiedEmail())
+            <a href="{{ route('book-loans.index') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3 rounded-lg border border-red-300 dark:border-red-800 text-red-700 dark:text-red-300 font-semibold hover:bg-red-50 dark:hover:bg-red-950 transition">
+              Bücher-Ausleihe
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+            </a>
+            @else
+            <span title="Bitte zuerst registrieren und die E-Mail-Adresse bestätigen." class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3 rounded-lg border border-neutral-200 dark:border-neutral-700 text-neutral-400 dark:text-neutral-600 font-semibold cursor-not-allowed select-none">
+              Bücher-Ausleihe
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+            </span>
+            @endif
+
             @auth
             @if(Auth::user()->is_admin)
             <a href="/admin" class="w-full sm:w-auto sm:ml-auto inline-flex items-center justify-center gap-3 px-6 py-3 rounded-lg border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 transition hover:shadow">

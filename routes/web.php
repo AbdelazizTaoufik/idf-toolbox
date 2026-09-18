@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BookLoanController;
 use App\Http\Controllers\MeetingGroupController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SubmissionController;
@@ -20,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 
 Route::get('/submission-response', function () {
@@ -77,6 +78,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::middleware(['auth', 'verified'])->prefix('buecher')->group(function () {
+    Route::get('/', [BookLoanController::class, 'index'])->name('book-loans.index');
+    Route::post('/', [BookLoanController::class, 'store'])->name('book-loans.store');
+    Route::post('/{bookLoan}/return', [BookLoanController::class, 'returnBook'])->name('book-loans.return');
+    Route::get('/{bookLoan}/photo/{type}', [BookLoanController::class, 'photo'])->name('book-loans.photo');
 });
 
 require __DIR__.'/auth.php';
