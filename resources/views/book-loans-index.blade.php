@@ -1,8 +1,10 @@
 <x-layout title="Bücher-Ausleihe">
     <div class="max-w-screen-xl mx-auto mt-8 px-4 pb-16">
         <div class="mb-6">
-            <a href="{{ route('welcome') }}" class="text-brand-600 hover:text-brand-700 dark:text-brand-300 dark:hover:text-brand-200 font-medium flex items-center gap-2">
-                ← Zurück zur Startseite
+            <a href="{{ route('welcome') }}"
+               class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-stone-700 bg-white rounded-full border border-stone-200 shadow-warm hover:bg-stone-100 hover:text-brand-700 transition dark:bg-stone-800 dark:text-stone-300 dark:border-stone-600 dark:hover:bg-stone-700 dark:hover:text-white">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Zurück zur Startseite
             </a>
         </div>
 

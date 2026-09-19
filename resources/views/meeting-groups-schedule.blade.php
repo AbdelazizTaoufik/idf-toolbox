@@ -1,5 +1,13 @@
 <x-layout title="Wochenplan">
     <div class="max-w-screen-xl mx-auto px-4 py-16">
+        <div class="mb-6">
+            <a href="{{ route('welcome') }}"
+               class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-stone-700 bg-white rounded-full border border-stone-200 shadow-warm hover:bg-stone-100 hover:text-brand-700 transition dark:bg-stone-800 dark:text-stone-300 dark:border-stone-600 dark:hover:bg-stone-700 dark:hover:text-white">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Zurück zur Startseite
+            </a>
+        </div>
+
         <div class="text-center mb-10">
             <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-stone-900 dark:text-white">
                 Wochenplan
