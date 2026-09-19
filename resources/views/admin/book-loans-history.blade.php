@@ -65,9 +65,19 @@
                                 <td class="px-4 py-4 text-stone-600 dark:text-stone-400">{{ $loan->loaned_at->format('d.m.Y') }}</td>
                                 <td class="px-4 py-4 text-stone-600 dark:text-stone-400">{{ $loan->returned_at->format('d.m.Y') }}</td>
                                 <td class="px-4 py-4 text-center">
-                                    <div class="flex items-center justify-center gap-3">
-                                        <a href="{{ route('admin.book-loans.photo', [$loan, 'loan']) }}" target="_blank" class="text-brand-600 dark:text-brand-300 hover:underline">Leihfoto</a>
-                                        <a href="{{ route('admin.book-loans.photo', [$loan, 'return']) }}" target="_blank" class="text-brand-600 dark:text-brand-300 hover:underline">Rückgabefoto</a>
+                                    <div class="flex items-center justify-center gap-2">
+                                        <x-modals.photo
+                                            :id="'loan-photo-'.$loan->id"
+                                            title="Leihfoto – {{ $loan->title }}"
+                                            :src="route('admin.book-loans.photo', [$loan, 'loan'])"
+                                            label="Leihfoto"
+                                        />
+                                        <x-modals.photo
+                                            :id="'return-photo-'.$loan->id"
+                                            title="Rückgabefoto – {{ $loan->title }}"
+                                            :src="route('admin.book-loans.photo', [$loan, 'return'])"
+                                            label="Rückgabefoto"
+                                        />
                                     </div>
                                 </td>
                             </tr>
