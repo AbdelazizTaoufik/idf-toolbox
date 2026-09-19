@@ -73,7 +73,7 @@
                                 name="photo"
                                 id="photo"
                                 accept="image/jpeg,image/png,image/webp"
-                                class="w-full text-sm text-stone-700 dark:text-stone-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-brand-600 file:text-white file:font-semibold hover:file:bg-brand-700"
+                                class="w-full text-sm rounded-full text-stone-700 dark:text-stone-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-brand-600 file:text-white file:font-semibold hover:file:bg-brand-700"
                                 required
                             >
                             <p class="mt-1 text-xs text-stone-400 dark:text-stone-500">Große Fotos werden automatisch komprimiert.</p>
