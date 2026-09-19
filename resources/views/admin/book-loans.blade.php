@@ -16,6 +16,21 @@
 
         <h1 class="text-2xl font-extrabold tracking-tight text-stone-900 dark:text-white mb-6">Bücherverleih</h1>
 
+        <form method="GET" action="{{ route('admin.book-loans.index') }}" class="bg-white dark:bg-stone-800 rounded-2xl shadow-warm border border-stone-100 dark:border-stone-700 p-6 mb-6">
+            <div class="flex flex-col sm:flex-row gap-3 sm:items-end">
+                <div class="flex-1">
+                    <label for="search" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Nutzer suchen</label>
+                    <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Name..." class="w-full px-4 py-2 border border-stone-200 dark:border-stone-600 rounded-xl bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                </div>
+                <div class="flex gap-2">
+                    @if(request('search'))
+                        <a href="{{ route('admin.book-loans.index') }}" class="px-4 py-2 bg-stone-200 dark:bg-stone-600 text-stone-700 dark:text-white rounded-full hover:bg-stone-300 dark:hover:bg-stone-500 transition duration-300 font-medium">Zurücksetzen</a>
+                    @endif
+                    <button type="submit" class="px-6 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-full transition duration-300 font-medium">Filtern</button>
+                </div>
+            </div>
+        </form>
+
         <div class="space-y-3">
             @forelse($userGroups as $group)
                 <details class="group bg-white dark:bg-stone-800 rounded-2xl shadow-warm border border-stone-100 dark:border-stone-700 overflow-hidden">
@@ -31,13 +46,19 @@
                     <div class="border-t border-stone-100 dark:border-stone-700 divide-y divide-stone-100 dark:divide-stone-700">
                         @foreach($group['loans'] as $loan)
                             <div class="px-6 py-4 flex items-center gap-4">
-                                <img src="{{ route('admin.book-loans.photo', [$loan, 'loan']) }}"
-                                     alt="Leihfoto {{ $loan->title }}"
-                                     class="w-16 h-16 object-cover rounded-xl border border-stone-100 dark:border-stone-700 flex-shrink-0">
+                                <x-modals.photo
+                                    :id="'loan-photo-'.$loan->id"
+                                    title="Leihfoto – {{ $loan->title }}"
+                                    :src="route('admin.book-loans.photo', [$loan, 'loan'])"
+                                >
+                                    <img src="{{ route('admin.book-loans.photo', [$loan, 'loan']) }}"
+                                         alt="Leihfoto {{ $loan->title }}"
+                                         class="w-16 h-16 object-cover rounded-xl border border-stone-100 dark:border-stone-700 flex-shrink-0 hover:opacity-80 transition">
+                                </x-modals.photo>
                                 <div>
                                     <p class="font-medium text-stone-900 dark:text-white">{{ $loan->title }}</p>
                                     <p class="text-sm text-stone-500 dark:text-stone-400">
-                                        Ausgeliehen am {{ $loan->loaned_at->format('d.m.Y') }}
+                                        Ausgeliehen am {{ $loan->loaned_at->format('d.m.Y H:i') }} Uhr
                                     </p>
                                 </div>
                             </div>
@@ -45,7 +66,13 @@
                     </div>
                 </details>
             @empty
-                <p class="text-stone-500 dark:text-stone-400 text-center py-8">Aktuell hat niemand ein Buch ausgeliehen.</p>
+                <p class="text-stone-500 dark:text-stone-400 text-center py-8">
+                    @if(request('search'))
+                        Keine Nutzer mit offenen Ausleihen gefunden.
+                    @else
+                        Aktuell hat niemand ein Buch ausgeliehen.
+                    @endif
+                </p>
             @endforelse
         </div>
     </div>

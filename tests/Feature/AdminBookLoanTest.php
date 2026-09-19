@@ -66,6 +66,33 @@ class AdminBookLoanTest extends TestCase
         $response->assertDontSee('Alles zurückgegeben');
     }
 
+    public function test_index_can_be_filtered_by_user_search()
+    {
+        $admin = $this->adminWithBookLoansAccess();
+
+        $borrowerA = User::factory()->create(['name' => 'Vielleiher']);
+        $borrowerB = User::factory()->create(['name' => 'Anderer Nutzer']);
+
+        BookLoan::create([
+            'user_id' => $borrowerA->id,
+            'title' => 'Buch A',
+            'loan_photo_path' => 'book-loans/a.jpg',
+            'loaned_at' => now(),
+        ]);
+        BookLoan::create([
+            'user_id' => $borrowerB->id,
+            'title' => 'Buch B',
+            'loan_photo_path' => 'book-loans/b.jpg',
+            'loaned_at' => now(),
+        ]);
+
+        $response = $this->actingAs($admin)->get('/admin/book-loans?search=Viel');
+
+        $response->assertOk();
+        $response->assertSee('Vielleiher');
+        $response->assertDontSee('Anderer Nutzer');
+    }
+
     public function test_history_only_shows_returned_loans_and_filters_by_user_and_date_ranges()
     {
         $admin = $this->adminWithBookLoansAccess();

@@ -75,12 +75,18 @@ class BookLoanController extends Controller
         return Storage::disk('local')->response($path);
     }
 
-    public function adminIndex()
+    public function adminIndex(Request $request)
     {
-        $openLoans = BookLoan::with('user')
-            ->whereNull('returned_at')
-            ->orderBy('loaned_at')
-            ->get();
+        $query = BookLoan::with('user')->whereNull('returned_at');
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%");
+            });
+        }
+
+        $openLoans = $query->orderBy('loaned_at')->get();
 
         $userGroups = $openLoans->groupBy('user_id')
             ->map(fn ($loans) => [
