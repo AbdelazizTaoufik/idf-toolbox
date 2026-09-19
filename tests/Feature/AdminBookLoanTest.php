@@ -132,7 +132,7 @@ class AdminBookLoanTest extends TestCase
         $response->assertSee('Anderer Nutzer');
 
         $response = $this->actingAs($admin)->get('/admin/book-loans/history?' . http_build_query([
-            'user_id' => $userA->id,
+            'user' => $userA->name,
             'loaned_from' => '2026-01-01',
             'loaned_to' => '2026-01-15',
             'returned_from' => '2026-01-15',

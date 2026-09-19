@@ -13,13 +13,13 @@
         <form method="GET" action="{{ route('admin.book-loans.history') }}" class="bg-white dark:bg-stone-800 rounded-2xl shadow-warm border border-stone-100 dark:border-stone-700 p-6 mb-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <div>
-                    <label for="user_id" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Nutzer</label>
-                    <select name="user_id" id="user_id" class="w-full px-4 py-2 border border-stone-200 dark:border-stone-600 rounded-xl bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
-                        <option value="">Alle Nutzer</option>
+                    <label for="user" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Nutzer</label>
+                    <input type="text" name="user" id="user" list="user-suggestions" value="{{ request('user') }}" placeholder="Name..." autocomplete="off" class="w-full px-4 py-2 border border-stone-200 dark:border-stone-600 rounded-xl bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                    <datalist id="user-suggestions">
                         @foreach($users as $user)
-                            <option value="{{ $user->id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
+                            <option value="{{ $user->name }}">
                         @endforeach
-                    </select>
+                    </datalist>
                 </div>
                 <div>
                     <label for="loaned_from" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Leihdatum von</label>

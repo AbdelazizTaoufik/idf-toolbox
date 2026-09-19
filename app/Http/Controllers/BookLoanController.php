@@ -103,8 +103,11 @@ class BookLoanController extends Controller
     {
         $query = BookLoan::with('user')->whereNotNull('returned_at');
 
-        if ($request->filled('user_id')) {
-            $query->where('user_id', $request->input('user_id'));
+        if ($request->filled('user')) {
+            $search = $request->input('user');
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%");
+            });
         }
 
         if ($request->filled('loaned_from')) {
