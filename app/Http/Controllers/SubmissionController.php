@@ -51,7 +51,8 @@ class SubmissionController extends Controller
 
         $submissions = $query->orderBy('created_at', 'desc')->paginate(10);
         $meetingGroups = MeetingGroup::orderBy('name')->get();
+        $searchSuggestions = Submission::orderBy('title')->pluck('title')->unique();
 
-        return view('admin.submission', compact('submissions', 'meetingGroups'));
+        return view('admin.submission', compact('submissions', 'meetingGroups', 'searchSuggestions'));
     }
 }

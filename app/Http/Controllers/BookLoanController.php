@@ -96,7 +96,9 @@ class BookLoanController extends Controller
             ->sortBy(fn ($group) => $group['loans']->min('loaned_at'))
             ->values();
 
-        return view('admin.book-loans', compact('userGroups'));
+        $users = User::orderBy('name')->get();
+
+        return view('admin.book-loans', compact('userGroups', 'users'));
     }
 
     public function adminHistory(Request $request)

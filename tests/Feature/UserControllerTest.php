@@ -40,7 +40,8 @@ class UserControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('John Doe');
-        $response->assertDontSee('Jane Smith');
+        // "Jane Smith" still appears once, as a search suggestion in the datalist.
+        $this->assertSame(1, substr_count($response->getContent(), 'Jane Smith'));
     }
 
     public function test_admin_can_toggle_admin_status_for_verified_user()

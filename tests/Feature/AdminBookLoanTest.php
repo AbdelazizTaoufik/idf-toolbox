@@ -63,7 +63,7 @@ class AdminBookLoanTest extends TestCase
         $response->assertOk();
         $response->assertSee('Vielleiher');
         $response->assertSee('2 Bücher');
-        $response->assertDontSee('Alles zurückgegeben');
+        $response->assertDontSee('Buch C');
     }
 
     public function test_index_can_be_filtered_by_user_search()
@@ -90,7 +90,7 @@ class AdminBookLoanTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Vielleiher');
-        $response->assertDontSee('Anderer Nutzer');
+        $response->assertDontSee('Buch B');
     }
 
     public function test_history_only_shows_returned_loans_and_filters_by_user_and_date_ranges()

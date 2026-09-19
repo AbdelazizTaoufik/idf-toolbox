@@ -16,9 +16,16 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                     <input type="text" name="search"
+                           list="submission-search-suggestions"
                            placeholder="Suche nach Beitrag..."
                            value="{{ request('search') }}"
+                           autocomplete="off"
                            class="px-4 py-2 w-full bg-stone-50 dark:bg-stone-700 border border-stone-200 dark:border-stone-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 dark:text-white">
+                    <datalist id="submission-search-suggestions">
+                        @foreach($searchSuggestions as $suggestion)
+                            <option value="{{ $suggestion }}">
+                        @endforeach
+                    </datalist>
                 </div>
 
                 <!-- Filter by Meeting Group -->

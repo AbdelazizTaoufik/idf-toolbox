@@ -39,8 +39,10 @@ class UserController extends Controller
 
         $users = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
         $adminModules = AdminModule::all();
+        $searchSuggestions = User::orderBy('name')->pluck('name')
+            ->merge(User::orderBy('email')->pluck('email'));
 
-        return view('admin.users', compact('users', 'adminModules'));
+        return view('admin.users', compact('users', 'adminModules', 'searchSuggestions'));
     }
 
     public function toggleAdmin(User $user)

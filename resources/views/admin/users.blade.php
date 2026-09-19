@@ -17,7 +17,12 @@
                 <!-- Suche -->
                 <div class="lg:col-span-2">
                     <label for="search" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Suche (Name, E-Mail)</label>
-                    <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Suchen..." class="w-full px-4 py-2 border border-stone-200 dark:border-stone-600 rounded-xl bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                    <input type="text" name="search" id="search" list="user-search-suggestions" value="{{ request('search') }}" placeholder="Suchen..." autocomplete="off" class="w-full px-4 py-2 border border-stone-200 dark:border-stone-600 rounded-xl bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                    <datalist id="user-search-suggestions">
+                        @foreach($searchSuggestions as $suggestion)
+                            <option value="{{ $suggestion }}">
+                        @endforeach
+                    </datalist>
                 </div>
 
                 <!-- Filter: Admin -->
