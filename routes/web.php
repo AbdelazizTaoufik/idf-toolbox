@@ -68,6 +68,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('/admin/meeting-groups/{meetingGroup}', [MeetingGroupController::class, 'destroy'])
             ->name('meeting-groups.destroy');
     });
+
+    Route::middleware('admin.module:book_loans')->group(function () {
+        Route::get('/admin/book-loans', [BookLoanController::class, 'adminIndex'])->name('admin.book-loans.index');
+        Route::get('/admin/book-loans/history', [BookLoanController::class, 'adminHistory'])->name('admin.book-loans.history');
+        Route::get('/admin/book-loans/{bookLoan}/photo/{type}', [BookLoanController::class, 'adminPhoto'])->name('admin.book-loans.photo');
+    });
 });
 
 Route::get('/dashboard', function () {

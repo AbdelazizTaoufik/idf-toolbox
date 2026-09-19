@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BookLoan;
+use App\Models\User;
 use App\Services\BookLoanPhotoStorage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -65,6 +66,65 @@ class BookLoanController extends Controller
     public function photo(BookLoan $bookLoan, string $type)
     {
         abort_if($bookLoan->user_id !== Auth::id(), 403);
+        abort_unless(in_array($type, ['loan', 'return'], true), 404);
+
+        $path = $type === 'loan' ? $bookLoan->loan_photo_path : $bookLoan->return_photo_path;
+
+        abort_if(!$path || !Storage::disk('local')->exists($path), 404);
+
+        return Storage::disk('local')->response($path);
+    }
+
+    public function adminIndex()
+    {
+        $openLoans = BookLoan::with('user')
+            ->whereNull('returned_at')
+            ->orderBy('loaned_at')
+            ->get();
+
+        $userGroups = $openLoans->groupBy('user_id')
+            ->map(fn ($loans) => [
+                'user' => $loans->first()->user,
+                'loans' => $loans,
+            ])
+            ->sortBy(fn ($group) => $group['loans']->min('loaned_at'))
+            ->values();
+
+        return view('admin.book-loans', compact('userGroups'));
+    }
+
+    public function adminHistory(Request $request)
+    {
+        $query = BookLoan::with('user')->whereNotNull('returned_at');
+
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->input('user_id'));
+        }
+
+        if ($request->filled('loaned_from')) {
+            $query->whereDate('loaned_at', '>=', $request->input('loaned_from'));
+        }
+
+        if ($request->filled('loaned_to')) {
+            $query->whereDate('loaned_at', '<=', $request->input('loaned_to'));
+        }
+
+        if ($request->filled('returned_from')) {
+            $query->whereDate('returned_at', '>=', $request->input('returned_from'));
+        }
+
+        if ($request->filled('returned_to')) {
+            $query->whereDate('returned_at', '<=', $request->input('returned_to'));
+        }
+
+        $bookLoans = $query->orderByDesc('returned_at')->paginate(10)->withQueryString();
+        $users = User::orderBy('name')->get();
+
+        return view('admin.book-loans-history', compact('bookLoans', 'users'));
+    }
+
+    public function adminPhoto(BookLoan $bookLoan, string $type)
+    {
         abort_unless(in_array($type, ['loan', 'return'], true), 404);
 
         $path = $type === 'loan' ? $bookLoan->loan_photo_path : $bookLoan->return_photo_path;

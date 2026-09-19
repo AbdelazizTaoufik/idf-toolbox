@@ -14,6 +14,7 @@ class AdminModule extends Model
     public const USERS = 'users';
     public const SUBMISSIONS = 'submissions';
     public const MEETING_GROUPS = 'meeting_groups';
+    public const BOOK_LOANS = 'book_loans';
 
     /**
      * Keys of all modules that can be assigned, mapped to their display label.
@@ -24,6 +25,7 @@ class AdminModule extends Model
         self::USERS => 'Benutzerverwaltung',
         self::SUBMISSIONS => 'Kummerkastenbeiträge',
         self::MEETING_GROUPS => 'Sitzungsgruppen',
+        self::BOOK_LOANS => 'Bücherverleih',
     ];
 
     protected $fillable = [
