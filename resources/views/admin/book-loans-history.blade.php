@@ -62,8 +62,8 @@
                             <tr class="hover:bg-stone-50 dark:hover:bg-stone-700/50 transition">
                                 <td class="px-4 py-4 font-medium text-stone-900 dark:text-white">{{ $loan->user->name }}</td>
                                 <td class="px-4 py-4 text-stone-700 dark:text-stone-300">{{ $loan->title }}</td>
-                                <td class="px-4 py-4 text-stone-600 dark:text-stone-400">{{ $loan->loaned_at->format('d.m.Y') }}</td>
-                                <td class="px-4 py-4 text-stone-600 dark:text-stone-400">{{ $loan->returned_at->format('d.m.Y') }}</td>
+                                <td class="px-4 py-4 text-stone-600 dark:text-stone-400">{{ $loan->loaned_at->format('d.m.Y H:i') }} Uhr</td>
+                                <td class="px-4 py-4 text-stone-600 dark:text-stone-400">{{ $loan->returned_at->format('d.m.Y H:i') }} Uhr</td>
                                 <td class="px-4 py-4 text-center">
                                     <div class="flex items-center justify-center gap-2">
                                         <x-modals.photo
