@@ -6,7 +6,7 @@
                  class="h-10 md:h-12 rounded-md transition duration-300 ease-in-out group-hover:scale-105"
                  alt="Islamische Denkfabrik Logo" />
             <span class="hidden sm:block text-white font-extrabold tracking-tight text-lg leading-tight">
-                IDF Toolbox
+                Islamische Denkfabrik Toolbox
             </span>
         </a>
 

@@ -7,7 +7,7 @@
             </span>
 
             <h1 class="mt-6 text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-stone-900 dark:text-white">
-                IDF Toolbox
+                Islamische Denkfabrik Toolbox
             </h1>
             <p class="mt-4 text-lg text-stone-600 dark:text-stone-300">
                 Deine zentrale Anlaufstelle für Verwaltungs- und Organisationswerkzeuge der Islamischen Denkfabrik e.V.
