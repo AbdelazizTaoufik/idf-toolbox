@@ -46,7 +46,11 @@ class SubmissionController extends Controller
         }
 
         if ($request->has('meeting_group_id') && !empty($request->meeting_group_id)) {
-            $query->where('meeting_group_id', $request->meeting_group_id);
+            if ($request->meeting_group_id === 'none') {
+                $query->whereNull('meeting_group_id');
+            } else {
+                $query->where('meeting_group_id', $request->meeting_group_id);
+            }
         }
 
         $submissions = $query->orderBy('created_at', 'desc')->paginate(10);

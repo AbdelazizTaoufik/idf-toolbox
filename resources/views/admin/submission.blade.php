@@ -35,6 +35,7 @@
                     </svg>
                     <select name="meeting_group_id" class="px-4 py-2 w-full bg-stone-50 dark:bg-stone-700 border border-stone-200 dark:border-stone-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 dark:text-white">
                         <option value="">-- Alle Sitzungsgruppen --</option>
+                        <option value="none" {{ request('meeting_group_id') === 'none' ? 'selected' : '' }}>Keine Gruppe</option>
                         @foreach($meetingGroups as $group)
                             <option value="{{ $group->id }}" {{ request('meeting_group_id') == $group->id ? 'selected' : '' }}>
                                 {{ $group->name }}

@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             MeetingGroupSeeder::class,
             UserSeeder::class,
             BookLoanSeeder::class,
+            SubmissionSeeder::class,
         ]);
     }
 }
