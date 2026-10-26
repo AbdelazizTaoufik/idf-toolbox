@@ -1,10 +1,10 @@
 <x-layout title="Danke!">
     <div class="flex items-center justify-center p-4 py-16">
         <div class="bg-white dark:bg-stone-800 relative overflow-hidden shadow-warm-lg rounded-3xl border border-stone-100 dark:border-stone-700 max-w-md w-full text-center">
-            <div class="relative w-full h-56">
-                <img class="absolute inset-0 w-full h-full object-cover rounded-t-3xl"
-                     src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExNTVqYXowMzF6d2Z2bjMyOWZ2bWt5YnZvNDhpZTFzcncwN3dyb2thdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1AHCZObMNvSHFMweqC/giphy.gif"
-                     alt="Danke GIF" />
+            <div class="relative w-full h-40 bg-gradient-to-br from-brand-600 via-brand-500 to-brand-700 flex items-center justify-center rounded-t-3xl">
+                <div class="w-20 h-20 rounded-full bg-white/15 flex items-center justify-center">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                </div>
             </div>
             <div class="p-6">
                 <h5 class="text-3xl font-extrabold text-stone-900 dark:text-white mb-4">Vielen Dank für deinen Beitrag!</h5>

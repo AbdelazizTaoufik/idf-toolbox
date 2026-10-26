@@ -163,6 +163,8 @@
                                             <div class="flex items-center justify-center gap-2">
                                                 <button
                                                     onclick="editGroup('{{ $group->id }}', '{{ $group->name }}', '{{ addslashes($group->description) }}', '{{ $group->weekday }}', '{{ $group->time?->format('H:i') }}', {{ $group->is_public ? 'true' : 'false' }})"
+                                                    data-modal-target="editModal" data-modal-toggle="editModal"
+                                                    type="button"
                                                     class="inline-flex items-center justify-center p-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-full transition duration-200"
                                                     title="Bearbeiten"
                                                 >
@@ -214,12 +216,19 @@
     </div>
 
     <!-- Edit Modal -->
-    <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div class="bg-white dark:bg-stone-800 rounded-2xl shadow-warm-lg border border-stone-100 dark:border-stone-700 max-w-md w-full max-h-screen overflow-y-auto">
-            <div class="px-6 py-4 border-b border-stone-200 dark:border-stone-700 sticky top-0 bg-white dark:bg-stone-800 rounded-t-2xl">
+    <div id="editModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-md max-h-full">
+        <div class="relative bg-white dark:bg-stone-800 rounded-2xl shadow-warm-lg border border-stone-100 dark:border-stone-700 max-h-full overflow-y-auto">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-stone-200 dark:border-stone-700 sticky top-0 bg-white dark:bg-stone-800 rounded-t-2xl">
                 <h3 class="text-lg font-bold text-stone-900 dark:text-white">
                     Sitzungsgruppe bearbeiten
                 </h3>
+                <button type="button" class="text-stone-400 bg-transparent hover:bg-stone-100 hover:text-stone-900 rounded-full text-sm w-8 h-8 inline-flex justify-center items-center dark:hover:bg-stone-700 dark:hover:text-white" data-modal-hide="editModal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Schließen</span>
+                </button>
             </div>
 
             <form id="editForm" method="POST" class="p-6 space-y-4">
@@ -301,13 +310,14 @@
                     </button>
                     <button
                         type="button"
-                        onclick="closeEditModal()"
+                        data-modal-hide="editModal"
                         class="flex-1 px-4 py-2 bg-stone-200 dark:bg-stone-600 hover:bg-stone-300 dark:hover:bg-stone-500 text-stone-900 dark:text-white font-semibold rounded-full transition duration-200"
                     >
                         Abbrechen
                     </button>
                 </div>
             </form>
+        </div>
         </div>
     </div>
 
@@ -319,17 +329,6 @@
             document.getElementById('editWeekday').value = weekday;
             document.getElementById('editTime').value = time || '';
             document.getElementById('editIsPublic').checked = isPublic;
-            document.getElementById('editModal').classList.remove('hidden');
         }
-
-        function closeEditModal() {
-            document.getElementById('editModal').classList.add('hidden');
-        }
-
-        document.getElementById('editModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeEditModal();
-            }
-        });
     </script>
 </x-layout>

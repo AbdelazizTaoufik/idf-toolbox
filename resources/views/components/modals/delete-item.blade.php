@@ -18,7 +18,7 @@
                 <svg class="mx-auto mb-4 text-stone-400 w-12 h-12 dark:text-stone-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                 </svg>
-                <h3 class="mb-5 text-lg font-normal text-stone-600 dark:text-stone-300">Sind Sie sicher, dass Sie diesen Bietrag löschen möchten?</h3>
+                <h3 class="mb-5 text-lg font-normal text-stone-600 dark:text-stone-300">Sind Sie sicher, dass Sie diesen Beitrag löschen möchten?</h3>
                 <form id="delete-form-{{ $id }}" action="{{ route('destroy.submission', ['submission' => $id]) }}" method="POST">
                     @csrf
                     @method('DELETE')

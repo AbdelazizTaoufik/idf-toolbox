@@ -16,21 +16,21 @@
 
                     <!-- Email Address -->
                     <div>
-                        <x-input-label for="email" :value="__('Email')" />
+                        <x-input-label for="email" value="E-Mail-Adresse" />
                         <x-text-input id="email" class="block mt-2 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
                         <x-input-error :messages="$errors->get('email')" class="mt-2" />
                     </div>
 
                     <!-- Password -->
                     <div>
-                        <x-input-label for="password" :value="__('Password')" />
+                        <x-input-label for="password" value="Neues Passwort" />
                         <x-text-input id="password" class="block mt-2 w-full" type="password" name="password" required autocomplete="new-password" />
                         <x-input-error :messages="$errors->get('password')" class="mt-2" />
                     </div>
 
                     <!-- Confirm Password -->
                     <div>
-                        <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+                        <x-input-label for="password_confirmation" value="Passwort bestätigen" />
 
                         <x-text-input id="password_confirmation" class="block mt-2 w-full"
                                             type="password"
@@ -39,10 +39,10 @@
                         <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
                     </div>
 
-                    <div class="flex items-center justify-end">
-                        <x-primary-button>
-                            {{ __('Reset Password') }}
-                        </x-primary-button>
+                    <div class="pt-2">
+                        <button type="submit" class="w-full inline-flex items-center justify-center px-6 py-3 rounded-full bg-brand-600 hover:bg-brand-500 text-white font-semibold shadow-warm transition">
+                            Passwort zurücksetzen
+                        </button>
                     </div>
                 </form>
             </section>

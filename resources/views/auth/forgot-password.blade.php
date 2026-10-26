@@ -9,7 +9,7 @@
                 </div>
 
                 <div class="text-sm text-stone-600 dark:text-stone-300">
-                    {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+                    Passwort vergessen? Kein Problem. Geben Sie Ihre E-Mail-Adresse an und wir senden Ihnen einen Link, mit dem Sie ein neues Passwort wählen können.
                 </div>
 
                 <!-- Session Status -->
@@ -20,15 +20,15 @@
 
                     <!-- Email Address -->
                     <div>
-                        <x-input-label for="email" :value="__('Email')" />
+                        <x-input-label for="email" value="E-Mail-Adresse" />
                         <x-text-input id="email" class="block mt-2 w-full" type="email" name="email" :value="old('email')" required autofocus />
                         <x-input-error :messages="$errors->get('email')" class="mt-2" />
                     </div>
 
-                    <div class="flex items-center justify-end">
-                        <x-primary-button>
-                            {{ __('Email Password Reset Link') }}
-                        </x-primary-button>
+                    <div class="pt-2">
+                        <button type="submit" class="w-full inline-flex items-center justify-center px-6 py-3 rounded-full bg-brand-600 hover:bg-brand-500 text-white font-semibold shadow-warm transition">
+                            Link zum Zurücksetzen senden
+                        </button>
                     </div>
                 </form>
             </section>
