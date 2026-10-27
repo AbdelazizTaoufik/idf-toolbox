@@ -19,8 +19,8 @@ RETENTION_DAYS=28
 
   CUTOFF="$(date -d "-${RETENTION_DAYS} days" +%Y%m%d)"
   # Date comparison relies on YYYYMMDD format: both 8 digits, starting with non-zero
-  oci os object list --bucket-name "$BUCKET" --query "data[].name" --raw-output \
-    | grep -oE 'idf-backup-[0-9]{8}-[0-9]{6}\.tar\.gz' || true \
+  (oci os object list --bucket-name "$BUCKET" --query "data[].name" --raw-output \
+    | grep -oE 'idf-backup-[0-9]{8}-[0-9]{6}\.tar\.gz' || true) \
     | while read -r name; do
         [ -z "$name" ] && continue
         OBJ_DATE="${name#idf-backup-}"
