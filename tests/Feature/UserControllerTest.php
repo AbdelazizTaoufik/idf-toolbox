@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\AdminModule;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -11,9 +12,22 @@ class UserControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * Admin routes are gated by both is_admin and the "users" admin module
+     * (see EnsureAdminModuleAccess) — this helper grants both at once so
+     * every test below exercises a realistically-permissioned admin.
+     */
+    private function createAdmin(array $attributes = []): User
+    {
+        $admin = User::factory()->create(array_merge(['is_admin' => true], $attributes));
+        $admin->adminModules()->attach(AdminModule::where('key', AdminModule::USERS)->first());
+
+        return $admin;
+    }
+
     public function test_admin_can_access_user_management()
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdmin();
 
         $response = $this->actingAs($admin)->get(route('admin.users.index'));
 
@@ -32,7 +46,7 @@ class UserControllerTest extends TestCase
 
     public function test_admin_can_search_users()
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdmin();
         User::factory()->create(['name' => 'John Doe', 'email' => 'john@example.com']);
         User::factory()->create(['name' => 'Jane Smith', 'email' => 'jane@example.com']);
 
@@ -46,7 +60,7 @@ class UserControllerTest extends TestCase
 
     public function test_admin_can_toggle_admin_status_for_verified_user()
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdmin();
         $targetUser = User::factory()->create([
             'is_admin' => false,
             'email_verified_at' => now(),
@@ -63,7 +77,7 @@ class UserControllerTest extends TestCase
 
     public function test_admin_cannot_toggle_admin_status_for_unverified_user()
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdmin();
         $targetUser = User::factory()->create([
             'is_admin' => false,
             'email_verified_at' => null,
@@ -81,7 +95,7 @@ class UserControllerTest extends TestCase
 
     public function test_admin_cannot_toggle_their_own_admin_status()
     {
-        $admin = User::factory()->create(['is_admin' => true, 'email_verified_at' => now()]);
+        $admin = $this->createAdmin(['email_verified_at' => now()]);
 
         $response = $this->withoutMiddleware(VerifyCsrfToken::class)
             ->actingAs($admin)
@@ -95,7 +109,7 @@ class UserControllerTest extends TestCase
 
     public function test_admin_can_toggle_user_verification()
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdmin();
         $targetUser = User::factory()->create(['email_verified_at' => null]);
 
         // Aktivieren
@@ -119,7 +133,7 @@ class UserControllerTest extends TestCase
 
     public function test_admin_can_delete_user()
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdmin();
         $targetUser = User::factory()->create();
 
         $response = $this->withoutMiddleware(VerifyCsrfToken::class)
@@ -133,7 +147,7 @@ class UserControllerTest extends TestCase
 
     public function test_admin_cannot_delete_themselves()
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdmin();
 
         $response = $this->withoutMiddleware(VerifyCsrfToken::class)
             ->actingAs($admin)
