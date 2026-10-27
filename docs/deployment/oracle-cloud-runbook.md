@@ -537,6 +537,14 @@ and are called out in bold where they occur:
    `MAIL_ENCRYPTION=tls`, etc. — these are already correct and don't need
    changing). Save and close the file.
 
+   **Also save a copy of the completed `APP_KEY` and the Brevo SMTP key
+   somewhere off-VM** (e.g. a password manager), not just in this file on
+   the VM's boot disk. `backup/backup.sh` (Part 4) only backs up the two
+   data volumes, never `.env.production` itself — if the VM's disk is ever
+   lost, these two values cannot be recovered from the backup, and Brevo
+   only shows the SMTP key once, at generation time, so there is no way to
+   retrieve it again later from the Brevo dashboard.
+
 6. Double check there is no stray `CHANGE-ME` left anywhere in the file:
 
    ```bash
@@ -724,13 +732,15 @@ and documents how to restore from a backup object.
 Two things below are **easy to get wrong in ways that don't fail loudly**,
 and are called out in bold where they occur:
 
-- `backup/backup.sh` hardcodes two Docker volume names
-  (`idf-whisper-box_sqlite-data` and `idf-whisper-box_book-loan-photos`) as a
-  guess, following Compose's default `<project-dir-name>_<volume-name>`
-  prefixing convention. This guess is only correct if the repo was cloned
-  into a directory literally named `idf-whisper-box` (which Step 3.1 above
-  does), **so you must confirm the actual volume names on your VM before
-  trusting the backup script, not just assume the guess was right.**
+- `backup/backup.sh` defaults to two Docker volume names
+  (`idf-whisper-box_sqlite-data` and `idf-whisper-box_book-loan-photos`,
+  overridable via the `SQLITE_VOLUME`/`BOOK_LOAN_VOLUME` environment
+  variables) as a guess, following Compose's default
+  `<project-dir-name>_<volume-name>` prefixing convention. This guess is only
+  correct if the repo was cloned into a directory literally named
+  `idf-whisper-box` (which Step 3.1 above does), **so you must confirm the
+  actual volume names on your VM before trusting the backup script, not just
+  assume the guess was right.**
 - A script that runs perfectly when you type it by hand can still fail
   silently every week from cron, because cron runs jobs with a minimal
   environment (no login shell, a bare `PATH`, no `$HOME`-derived config)
@@ -818,21 +828,22 @@ and are called out in bold where they occur:
    Expected: an empty result (`"data": []`) and no error — the bucket
    exists and is reachable, it just has nothing in it yet.
 
-### Step 4.2 — Confirm (and if needed, fix) the hardcoded volume names
+### Step 4.2 — Confirm (and if needed, override) the volume names
 
-`backup/backup.sh` hardcodes two Docker volume names:
+`backup/backup.sh` reads the two Docker volume names it needs from the
+`SQLITE_VOLUME` and `BOOK_LOAN_VOLUME` environment variables, falling back to
+these defaults if they're unset:
 
 ```bash
-docker run --rm -v idf-whisper-box_sqlite-data:/src/database \
-  -v idf-whisper-box_book-loan-photos:/src/book-loans \
-  ...
+SQLITE_VOLUME="${SQLITE_VOLUME:-idf-whisper-box_sqlite-data}"
+BOOK_LOAN_VOLUME="${BOOK_LOAN_VOLUME:-idf-whisper-box_book-loan-photos}"
 ```
 
-These are a guess based on Compose's default `<project-dir-name>_<volume-name>`
-prefix — it is **not guaranteed** to match your VM until you check it,
-because the prefix depends on the exact directory name the repo was cloned
-into back in Step 3.1. **Do not skip this check and assume the hardcoded
-names are already correct.**
+The defaults are a guess based on Compose's default
+`<project-dir-name>_<volume-name>` prefix — it is **not guaranteed** to match
+your VM until you check it, because the prefix depends on the exact
+directory name the repo was cloned into back in Step 3.1. **Do not skip this
+check and assume the defaults are already correct.**
 
 1. On the VM, with the app already brought up at least once (Step 3.2),
    list the actual volume names Docker created:
@@ -843,39 +854,44 @@ names are already correct.**
 
    Expected: two lines, one ending in `_sqlite-data` and one ending in
    `_book-loan-photos`.
-2. Compare the full names printed against the two hardcoded in
-   `backup/backup.sh` (`idf-whisper-box_sqlite-data` and
-   `idf-whisper-box_book-loan-photos`). If you cloned the repo into
-   `idf-whisper-box` exactly as Step 3.1 instructs, these will already
-   match and there is nothing to change.
+2. Compare the full names printed against the two defaults above
+   (`idf-whisper-box_sqlite-data` and `idf-whisper-box_book-loan-photos`). If
+   you cloned the repo into `idf-whisper-box` exactly as Step 3.1 instructs,
+   these will already match and there is nothing to override — skip ahead to
+   sub-step 4 and the rest of Part 4 uses the plain crontab line from Step
+   4.3 with no changes.
 3. **If they don't match** (for example, because you cloned into a
    differently-named directory, or Compose's project name was overridden by
-   a `COMPOSE_PROJECT_NAME` environment variable or a `-p` flag), edit the
-   two `-v` lines in `backup/backup.sh` on the VM to use the exact names
-   `docker volume ls` printed:
-
-   ```bash
-   nano backup/backup.sh
-   ```
-
-   Edit only the two volume names on the `docker run` line (the part before
-   each `:` in the `-v idf-whisper-box_sqlite-data:/src/database` and
-   `-v idf-whisper-box_book-loan-photos:/src/book-loans` arguments), save,
-   and close. Do not edit this file in your local git clone and push it
-   unless you intend that edit to be the new default for every future
-   deployment — this is a VM-local fix for a VM-local naming mismatch.
+   a `COMPOSE_PROJECT_NAME` environment variable or a `-p` flag), do **not**
+   edit `backup/backup.sh` on the VM to hardcode the real names — a local,
+   uncommitted edit to a tracked file will block the `git pull --ff-only` in
+   a future `./deploy.sh` run the next time anyone changes this file
+   upstream. Instead, note the two actual names `docker volume ls` printed
+   and supply them as environment variable overrides wherever you invoke the
+   script: when running it manually (sub-step 4 below) and in the crontab
+   line itself (Step 4.3 shows the exact syntax).
 4. Make the script executable if it isn't already, and confirm it runs
-   cleanly by hand before trusting cron with it:
+   cleanly by hand before trusting cron with it. If the names from sub-step
+   2 matched the defaults, no overrides are needed:
 
    ```bash
    chmod +x backup/backup.sh
    ./backup/backup.sh
    ```
 
+   If they didn't match, pass the actual names as a one-off environment
+   override on the same command line (replace the example values with the
+   ones `docker volume ls` printed):
+
+   ```bash
+   chmod +x backup/backup.sh
+   SQLITE_VOLUME=actual-sqlite-volume-name BOOK_LOAN_VOLUME=actual-book-loan-volume-name ./backup/backup.sh
+   ```
+
    Then check the log and the bucket:
 
    ```bash
-   tail -20 /var/log/idf-backup.log
+   tail -20 "$HOME/idf-backup.log"
    oci os object list --bucket-name idf-whisper-box-backups
    ```
 
@@ -901,6 +917,17 @@ will be `/home/ubuntu/idf-whisper-box` if you followed Step 3.1 exactly):
 ```
 0 3 * * 0 /path/to/idf-whisper-box/backup/backup.sh
 ```
+
+**Only if Step 4.2 found the actual volume names differ from the script's
+defaults**, prefix the same line with the two overrides instead, using the
+exact names `docker volume ls` printed:
+
+```
+SQLITE_VOLUME=actual-sqlite-volume-name BOOK_LOAN_VOLUME=actual-book-loan-volume-name 0 3 * * 0 /path/to/idf-whisper-box/backup/backup.sh
+```
+
+If the names already matched the defaults in Step 4.2, use the plain line
+above with no overrides.
 
 This runs the backup every Sunday at 03:00 server time. Save and close the
 editor. Confirm it was installed:
@@ -941,7 +968,7 @@ cron-triggered run succeed.
 3. Wait for that time to pass, then check both the log and the bucket:
 
    ```bash
-   tail -20 /var/log/idf-backup.log
+   tail -20 "$HOME/idf-backup.log"
    oci os object list --bucket-name idf-whisper-box-backups
    ```
 
@@ -962,8 +989,10 @@ cron-triggered run succeed.
    crontab -e
    ```
 
-   Change the line back to `0 3 * * 0 /path/to/idf-whisper-box/backup/backup.sh`
-   (the same absolute path from Step 4.3), save, and close. Confirm with
+   Change the line back to the real weekly schedule from Step 4.3 — either
+   `0 3 * * 0 /path/to/idf-whisper-box/backup/backup.sh` or, if Step 4.2
+   required the `SQLITE_VOLUME`/`BOOK_LOAN_VOLUME` overrides, the same line
+   with those overrides restored — save, and close. Confirm with
    `crontab -l` that it now shows `0 3 * * 0` again, not the temporary
    test schedule.
 
@@ -973,6 +1002,21 @@ Use this if the VM's disk is lost, corrupted, or you need to roll back to an
 earlier backup. This mirrors the backup script's own approach (a throwaway
 `alpine` container bind-mounting the named volumes) but in reverse — extract
 into the volumes instead of tar-ing out of them.
+
+**Restoring the two data volumes below is not sufficient on a fresh
+replacement VM — `.env.production` must exist first, and it is not part of
+the backup.** `backup/backup.sh` only archives `sqlite-data` and
+`book-loan-photos`; `.env.production` lives solely on the VM's boot disk, so
+if that disk is the thing that was lost, this file is gone too and the app
+cannot start without it (`docker/entrypoint.sh` refuses to boot without
+`APP_KEY` set). Before step 3 below, re-do Step 3.1 on the replacement VM
+(clone the repo, `cp .env.production.example .env.production`) and fill it
+in either from the off-VM copy of `APP_KEY` and the Brevo SMTP key you saved
+in Step 3.1, or by regenerating both: a new `APP_KEY` (`php artisan
+key:generate --show`, on a machine with PHP, exactly as in Step 3.1 — note
+that a new `APP_KEY` invalidates all existing sessions/cookies, forcing
+users to log in again, but does **not** lose any data) and a new Brevo SMTP
+key (Part 2, Step 2.4 — the old key cannot be retrieved, only replaced).
 
 1. Pick which backup object to restore and list the available ones:
 
@@ -1038,12 +1082,14 @@ into the volumes instead of tar-ing out of them.
   both your Oracle account login and your SSH key.
 - A private, Standard-tier Object Storage bucket named
   `idf-whisper-box-backups`.
-- `backup/backup.sh`'s two hardcoded volume names confirmed (or corrected)
-  against the VM's actual `docker volume ls` output.
+- `backup/backup.sh`'s two default volume names confirmed against the VM's
+  actual `docker volume ls` output (or overridden via `SQLITE_VOLUME`/
+  `BOOK_LOAN_VOLUME` in the crontab line, if they didn't match — never by
+  editing the tracked script on the VM).
 - A weekly cron job (`0 3 * * 0`) running `backup/backup.sh`, with a
   **cron-triggered** (not just manually-triggered) run proven to produce
   both a new object in the bucket and a clean `done` line in
-  `/var/log/idf-backup.log`.
+  `$HOME/idf-backup.log`.
 - A documented restore procedure: download an archive from the bucket,
   `docker compose down`, extract it into the named volumes via a throwaway
   `alpine` container, `docker compose up -d`, and re-verify with Step 3.3's
