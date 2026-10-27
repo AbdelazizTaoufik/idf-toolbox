@@ -1,16 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+PATH="$HOME/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+
 BUCKET="idf-whisper-box-backups"
+SQLITE_VOLUME="${SQLITE_VOLUME:-idf-whisper-box_sqlite-data}"
+BOOK_LOAN_VOLUME="${BOOK_LOAN_VOLUME:-idf-whisper-box_book-loan-photos}"
 STAMP="$(date +%Y%m%d-%H%M%S)"
 TMP="/tmp/idf-backup-${STAMP}.tar.gz"
 RETENTION_DAYS=28
+LOG="$HOME/idf-backup.log"
 
 {
   echo "=== backup run ${STAMP} ==="
 
-  docker run --rm -v idf-whisper-box_sqlite-data:/src/database \
-    -v idf-whisper-box_book-loan-photos:/src/book-loans \
+  docker run --rm --user "$(id -u):$(id -g)" -v "${SQLITE_VOLUME}:/src/database" \
+    -v "${BOOK_LOAN_VOLUME}:/src/book-loans" \
     -v /tmp:/dest alpine \
     tar -czf "/dest/idf-backup-${STAMP}.tar.gz" -C /src database book-loans
 
@@ -31,4 +36,4 @@ RETENTION_DAYS=28
       done
 
   echo "=== backup run ${STAMP} done ==="
-} >> /var/log/idf-backup.log 2>&1
+} >> "$LOG" 2>&1
