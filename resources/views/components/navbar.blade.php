@@ -2,7 +2,7 @@
     <div class="flex items-center justify-between mx-auto max-w-screen-xl px-4 md:px-6 py-3">
         {{-- Logo --}}
         <a href="/" class="flex items-center gap-3 rtl:space-x-reverse group">
-            <img src="{{ asset('storage/images/idf-logo.png') }}"
+            <img src="{{ asset('images/idf-logo.png') }}"
                  class="h-10 md:h-12 rounded-md transition duration-300 ease-in-out group-hover:scale-105"
                  alt="Islamische Denkfabrik Logo" />
             <span class="hidden sm:block text-white font-extrabold tracking-tight text-lg leading-tight">

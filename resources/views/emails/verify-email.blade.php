@@ -13,7 +13,7 @@
                     <!-- Header -->
                     <tr>
                         <td style="background-color:#432018; padding:24px; text-align:center; border-radius:16px; margin:8px;">
-                            <img src="{{ asset('storage/images/idf-logo.png') }}" alt="Islamische Denkfabrik Logo" height="56" style="height:56px; border-radius:8px;">
+                            <img src="{{ asset('images/idf-logo.png') }}" alt="Islamische Denkfabrik Logo" height="56" style="height:56px; border-radius:8px;">
                         </td>
                     </tr>
 
