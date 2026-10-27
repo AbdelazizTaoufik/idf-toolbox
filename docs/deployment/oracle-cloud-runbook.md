@@ -710,7 +710,7 @@ the image itself are replaced.
 Part 4 (OCI CLI, Object Storage, backup cron, and restore) continues from
 here.
 
-## Part 4: backups, cron, and restore
+## Part 4: OCI CLI, Object Storage, backup cron, and restore
 
 Everything through Part 3 runs on a **single VM with a single boot volume**.
 If that disk is lost or corrupted, every Kummerkasten submission and every
