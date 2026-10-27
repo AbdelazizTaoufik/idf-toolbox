@@ -31,7 +31,8 @@ you skim everything else:
 - The **Reserved (static) Public IP** must be created and attached
   explicitly — if you skip this and just use the IP Oracle assigns
   automatically, it is ephemeral and can change later, which will silently
-  break DNS and your HTTPS certificate (Part 3).
+  break DNS (pointed at this IP in Part 2) and your HTTPS certificate
+  (issued against it in Part 3).
 
 ## Part 1: Oracle account, VM, Reserved IP, firewall
 
@@ -249,7 +250,7 @@ sudo systemctl enable --now docker
 This is the only step needed to make containers survive a reboot — it does
 not require writing any custom systemd unit. Combined with this project's
 `docker-compose.yml` using `restart: unless-stopped` on its services (set up
-in Part 2), this means: if Oracle ever reboots the host for maintenance,
+in Part 3), this means: if Oracle ever reboots the host for maintenance,
 Docker itself comes back up automatically because it's now a boot-enabled
 service, and then Docker restarts the app's containers automatically because
 of their `restart: unless-stopped` policy. No manual intervention needed
