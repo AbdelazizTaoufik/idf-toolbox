@@ -16,7 +16,7 @@ COPY . .
 RUN composer dump-autoload --optimize --no-dev
 
 FROM dunglas/frankenphp:1-php8.2-alpine
-RUN install-php-extensions pdo_sqlite sqlite3 gd bcmath zip opcache
+RUN install-php-extensions pdo_sqlite sqlite3 gd exif bcmath zip opcache
 WORKDIR /app
 COPY --from=vendor /app /app
 COPY --from=assets /app/public/build /app/public/build

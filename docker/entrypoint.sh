@@ -10,6 +10,9 @@ mkdir -p /app/storage/database
 mkdir -p /app/storage/app/book-loans
 touch /app/storage/database/database.sqlite
 
+mkdir -p /app/storage/framework/sessions /app/storage/framework/views \
+         /app/storage/framework/cache/data /app/storage/logs
+
 php artisan migrate --force
 php artisan config:cache
 php artisan route:cache

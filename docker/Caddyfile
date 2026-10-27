@@ -4,5 +4,12 @@
 	php_server
 	log {
 		output file /app/storage/logs/caddy-access.log
+		format filter {
+			wrap json
+			fields {
+				request>remote_ip delete
+				request>remote_port delete
+			}
+		}
 	}
 }
