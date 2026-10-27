@@ -22,7 +22,11 @@ written:
    repo onto the VM, configure `.env.production`, run `docker compose up`,
    and confirm the Let's Encrypt certificate, mail, and data persistence all
    actually work.
-4. Part 4: backups, maintenance, and day-2 operations.
+4. **Part 4: OCI CLI, Object Storage, backup cron, and restore** — installs
+   and authenticates the `oci` CLI, creates a private Object Storage bucket,
+   confirms the Docker volume names `backup/backup.sh` depends on, installs
+   and proves out a weekly cron-triggered backup, and documents the restore
+   procedure — closing the single-VM, single-disk risk called out below.
 
 Two decisions in Part 1 below are **permanent or easy to silently get wrong**
 and are called out in bold where they occur — read those callouts even if
@@ -703,4 +707,350 @@ the image itself are replaced.
   `./deploy.sh` on the VM) that rebuilds the image and restarts the
   container without touching any of the named volumes.
 
-Part 4 (backups, maintenance, and day-2 operations) continues from here.
+Part 4 (OCI CLI, Object Storage, backup cron, and restore) continues from
+here.
+
+## Part 4: backups, cron, and restore
+
+Everything through Part 3 runs on a **single VM with a single boot volume**.
+If that disk is lost or corrupted, every Kummerkasten submission and every
+book-loan photo goes with it — there is no second copy anywhere. This part
+closes that gap: `backup/backup.sh` (already committed, from Task 6) tars up
+the two named volumes that hold real user data and uploads the archive to
+Oracle Object Storage, and this section wires it to run automatically every
+week, proves a cron-triggered run actually works (not just a manual one),
+and documents how to restore from a backup object.
+
+Two things below are **easy to get wrong in ways that don't fail loudly**,
+and are called out in bold where they occur:
+
+- `backup/backup.sh` hardcodes two Docker volume names
+  (`idf-whisper-box_sqlite-data` and `idf-whisper-box_book-loan-photos`) as a
+  guess, following Compose's default `<project-dir-name>_<volume-name>`
+  prefixing convention. This guess is only correct if the repo was cloned
+  into a directory literally named `idf-whisper-box` (which Step 3.1 above
+  does), **so you must confirm the actual volume names on your VM before
+  trusting the backup script, not just assume the guess was right.**
+- A script that runs perfectly when you type it by hand can still fail
+  silently every week from cron, because cron runs jobs with a minimal
+  environment (no login shell, a bare `PATH`, no `$HOME`-derived config)
+  that a manual SSH session doesn't have. **Installing the cron line is not
+  enough on its own — you must prove a cron-triggered run, not a manual
+  one, actually produces a new object in the bucket and a clean log entry.**
+
+### Step 4.1 — Install the OCI CLI, configure it, and create the backup bucket
+
+1. On the VM (same SSH session as before), install the OCI CLI using
+   Oracle's official installer script:
+
+   ```bash
+   bash -c "$(curl -L https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh)"
+   ```
+
+   Accept the defaults when prompted (install location, adding `oci` to
+   `PATH`, enabling tab completion). Close and reopen your SSH session (or
+   run `exec $SHELL`) so the updated `PATH` takes effect, then confirm it's
+   on `PATH`:
+
+   ```bash
+   oci --version
+   ```
+
+2. **Generate an API signing key pair — this is a separate step from the
+   account signup and SSH key pair you already did in Part 1, and it's easy
+   to assume one of those already covers it.** The OCI CLI authenticates
+   with its own RSA key pair, distinct from both your Oracle account
+   password and the `~/.ssh/idf-whisper-box` SSH key from Step 1.2:
+
+   ```bash
+   oci setup config
+   ```
+
+   Answer the prompts:
+   - **Location for config**: accept the default (`~/.oci/config`).
+   - **User OCID**: in the OCI Console, click your profile icon (top right)
+     → **My profile**. Copy the **OCID** shown on that page.
+   - **Tenancy OCID**: on the same console, open the navigation menu →
+     **Tenancy** → **Tenancy details**, and copy the **OCID** shown there.
+   - **Region**: enter the region identifier for Germany Central / Frankfurt,
+     `eu-frankfurt-1` (this is the home region you locked in at Step 1.1).
+   - **Generate a new API signing key pair?**: answer `Y`. Accept the default
+     key directory (`~/.oci`) and default file names, and leave the
+     passphrase blank unless you want one.
+   - When it finishes, it prints the **public key**. Copy that whole block
+     (or run `cat ~/.oci/oci_api_key_public.pem` to get it again).
+3. Upload the public key to the console so it can verify requests signed
+   with the matching private key:
+   - Click your profile icon → **My profile** → left side, **API keys** →
+     **Add API key**.
+   - Select **Paste a public key**, paste the contents of
+     `~/.oci/oci_api_key_public.pem`, and click **Add**.
+   - The console shows a **Configuration file preview** — this should match
+     what `oci setup config` already wrote to `~/.oci/config`; you don't
+     need to change anything, it's just a confirmation.
+4. Verify the CLI can actually authenticate:
+
+   ```bash
+   oci os ns get
+   ```
+
+   Expected: prints your Object Storage namespace (a short alphanumeric
+   string) with no error. If this fails, re-check the User OCID, Tenancy
+   OCID, and region entered in sub-step 2 — a typo in any of them produces
+   an auth error here, not a config-file error.
+5. Create the backup bucket:
+   - In the OCI Console, open the navigation menu → **Storage** → **Object
+     Storage & Archive Storage** → **Buckets**.
+   - Confirm the compartment selector (left side) is on your root/default
+     compartment, then click **Create Bucket**.
+   - **Bucket Name**: `idf-whisper-box-backups` (this exact name — it's
+     hardcoded as `BUCKET` in `backup/backup.sh`).
+   - **Storage Tier**: **Standard**.
+   - **Visibility**: leave the bucket private (the default) — do not make it
+     public. Backups contain submission data and book-loan photos.
+   - Leave every other setting at its default and click **Create**.
+6. Confirm the CLI can see it:
+
+   ```bash
+   oci os object list --bucket-name idf-whisper-box-backups
+   ```
+
+   Expected: an empty result (`"data": []`) and no error — the bucket
+   exists and is reachable, it just has nothing in it yet.
+
+### Step 4.2 — Confirm (and if needed, fix) the hardcoded volume names
+
+`backup/backup.sh` hardcodes two Docker volume names:
+
+```bash
+docker run --rm -v idf-whisper-box_sqlite-data:/src/database \
+  -v idf-whisper-box_book-loan-photos:/src/book-loans \
+  ...
+```
+
+These are a guess based on Compose's default `<project-dir-name>_<volume-name>`
+prefix — it is **not guaranteed** to match your VM until you check it,
+because the prefix depends on the exact directory name the repo was cloned
+into back in Step 3.1. **Do not skip this check and assume the hardcoded
+names are already correct.**
+
+1. On the VM, with the app already brought up at least once (Step 3.2),
+   list the actual volume names Docker created:
+
+   ```bash
+   docker volume ls | grep idf
+   ```
+
+   Expected: two lines, one ending in `_sqlite-data` and one ending in
+   `_book-loan-photos`.
+2. Compare the full names printed against the two hardcoded in
+   `backup/backup.sh` (`idf-whisper-box_sqlite-data` and
+   `idf-whisper-box_book-loan-photos`). If you cloned the repo into
+   `idf-whisper-box` exactly as Step 3.1 instructs, these will already
+   match and there is nothing to change.
+3. **If they don't match** (for example, because you cloned into a
+   differently-named directory, or Compose's project name was overridden by
+   a `COMPOSE_PROJECT_NAME` environment variable or a `-p` flag), edit the
+   two `-v` lines in `backup/backup.sh` on the VM to use the exact names
+   `docker volume ls` printed:
+
+   ```bash
+   nano backup/backup.sh
+   ```
+
+   Edit only the two volume names on the `docker run` line (the part before
+   each `:` in the `-v idf-whisper-box_sqlite-data:/src/database` and
+   `-v idf-whisper-box_book-loan-photos:/src/book-loans` arguments), save,
+   and close. Do not edit this file in your local git clone and push it
+   unless you intend that edit to be the new default for every future
+   deployment — this is a VM-local fix for a VM-local naming mismatch.
+4. Make the script executable if it isn't already, and confirm it runs
+   cleanly by hand before trusting cron with it:
+
+   ```bash
+   chmod +x backup/backup.sh
+   ./backup/backup.sh
+   ```
+
+   Then check the log and the bucket:
+
+   ```bash
+   tail -20 /var/log/idf-backup.log
+   oci os object list --bucket-name idf-whisper-box-backups
+   ```
+
+   Expected: the log ends with a line like `=== backup run
+   <timestamp> done ===` with no error output above it, and the bucket
+   listing now shows one `idf-backup-<timestamp>.tar.gz` object. This
+   proves the volume names are correct and the script's logic works — but
+   it is still only a manual run; Step 4.4 below proves cron itself can run
+   it, which is a genuinely different thing.
+
+### Step 4.3 — Install the weekly cron job
+
+```bash
+crontab -e
+```
+
+If this is the first time you've run `crontab -e` on this VM, it will ask
+you to choose an editor — `nano` is the simplest choice. Add this line at
+the end of the file (replacing `/path/to/idf-whisper-box` with the actual
+absolute path — run `pwd` inside the cloned repo directory to get it, which
+will be `/home/ubuntu/idf-whisper-box` if you followed Step 3.1 exactly):
+
+```
+0 3 * * 0 /path/to/idf-whisper-box/backup/backup.sh
+```
+
+This runs the backup every Sunday at 03:00 server time. Save and close the
+editor. Confirm it was installed:
+
+```bash
+crontab -l
+```
+
+Expected: the line you just added is shown.
+
+### Step 4.4 — Verify a cron-triggered run, not just a manual one
+
+**This step exists because the manual run in Step 4.2 does not prove cron
+can run this script.** Cron executes jobs with a minimal environment — no
+login shell, a bare `PATH` that may not include `docker` or `oci`, no
+`$HOME` the way an interactive SSH session has it — so a script that works
+perfectly when you type it by hand can still fail every week when cron runs
+it, and because cron jobs run unattended, that failure can go unnoticed for
+months. Do not consider this part done until you've seen an actual
+cron-triggered run succeed.
+
+1. Note the current time on the VM:
+
+   ```bash
+   date
+   ```
+
+2. Temporarily edit the cron line to fire a minute or two from now, so you
+   don't have to wait for the real Sunday 03:00 schedule:
+
+   ```bash
+   crontab -e
+   ```
+
+   Change `0 3 * * 0` to a specific minute/hour a couple of minutes ahead of
+   the time from sub-step 1 — for example, if `date` showed `14:32`, use
+   `34 14 * * *` to fire at 14:34 today. Save and close.
+3. Wait for that time to pass, then check both the log and the bucket:
+
+   ```bash
+   tail -20 /var/log/idf-backup.log
+   oci os object list --bucket-name idf-whisper-box-backups
+   ```
+
+   Expected: a **new** `idf-backup-<timestamp>.tar.gz` object in the bucket
+   listing (with a timestamp matching the cron-triggered time, not the
+   manual run from Step 4.2), and the log's last entry ends in `=== backup
+   run <timestamp> done ===` with no error output above it. If the log has
+   no new entry at all, cron never ran the job — check `grep CRON
+   /var/log/syslog` for a line referencing `backup.sh` to see whether cron
+   attempted it and what it logged. If the log has a new entry but it ends
+   in an error instead of `done`, the script ran under cron's minimal
+   environment and failed somewhere `docker` or `oci` wasn't reachable on
+   cron's `PATH` — check the error text in the log against the specific
+   command it names.
+4. Once confirmed, restore the real weekly schedule:
+
+   ```bash
+   crontab -e
+   ```
+
+   Change the line back to `0 3 * * 0 /path/to/idf-whisper-box/backup/backup.sh`
+   (the same absolute path from Step 4.3), save, and close. Confirm with
+   `crontab -l` that it now shows `0 3 * * 0` again, not the temporary
+   test schedule.
+
+### Step 4.5 — Restore procedure
+
+Use this if the VM's disk is lost, corrupted, or you need to roll back to an
+earlier backup. This mirrors the backup script's own approach (a throwaway
+`alpine` container bind-mounting the named volumes) but in reverse — extract
+into the volumes instead of tar-ing out of them.
+
+1. Pick which backup object to restore and list the available ones:
+
+   ```bash
+   oci os object list --bucket-name idf-whisper-box-backups --query "data[].name" --raw-output
+   ```
+
+   Choose an `idf-backup-<timestamp>.tar.gz` name from the output — call
+   this `<object-name>` below.
+2. Download it to the VM (or a replacement VM, if the original disk is
+   gone):
+
+   ```bash
+   oci os object get --bucket-name idf-whisper-box-backups --name <object-name> --file /tmp/<object-name>
+   ```
+
+3. Stop the running app so nothing writes to the volumes while you restore
+   into them:
+
+   ```bash
+   cd idf-whisper-box
+   docker compose down
+   ```
+
+4. Extract the archive into the two named volumes using a throwaway
+   `alpine` container, the same way `backup/backup.sh` writes out of them —
+   use the exact volume names confirmed in Step 4.2 (shown here as
+   `idf-whisper-box_sqlite-data` and `idf-whisper-box_book-loan-photos`;
+   substitute your VM's actual names if Step 4.2 found them different):
+
+   ```bash
+   docker run --rm -v idf-whisper-box_sqlite-data:/dest/database \
+     -v idf-whisper-box_book-loan-photos:/dest/book-loans \
+     -v /tmp:/src alpine \
+     tar -xzf "/src/<object-name>" -C /dest
+   ```
+
+   This overwrites the current contents of both volumes with the contents
+   of the backup archive (the archive was created with `-C /src database
+   book-loans`, so it extracts back into the matching `database` and
+   `book-loans` subpaths — the same layout the volumes already expect).
+5. Bring the app back up:
+
+   ```bash
+   docker compose up -d
+   ```
+
+6. **Re-run Step 3.3's functional check** to confirm the restore actually
+   worked, not just that containers started: prove the TLS chain still
+   works (`curl -I https://<hostname>.duckdns.org`, no `-k`), and confirm
+   the restored data is really there — log in with the test account from
+   Step 3.3, confirm the earlier Kummerkasten submission and book-loan photo
+   are both visible again (or, if this is a fresh replacement VM without
+   that test account, register a new one and submit new test data, then run
+   `backup/backup.sh` once more and repeat this restore procedure once to
+   prove the whole backup-and-restore round trip works end-to-end on the new
+   VM).
+
+### End of Part 4 — what you should have now
+
+- The OCI CLI installed and authenticated (`oci os ns get` succeeds) via an
+  API signing key pair uploaded to the console — a separate credential from
+  both your Oracle account login and your SSH key.
+- A private, Standard-tier Object Storage bucket named
+  `idf-whisper-box-backups`.
+- `backup/backup.sh`'s two hardcoded volume names confirmed (or corrected)
+  against the VM's actual `docker volume ls` output.
+- A weekly cron job (`0 3 * * 0`) running `backup/backup.sh`, with a
+  **cron-triggered** (not just manually-triggered) run proven to produce
+  both a new object in the bucket and a clean `done` line in
+  `/var/log/idf-backup.log`.
+- A documented restore procedure: download an archive from the bucket,
+  `docker compose down`, extract it into the named volumes via a throwaway
+  `alpine` container, `docker compose up -d`, and re-verify with Step 3.3's
+  functional check.
+
+This closes the last open risk from the design doc: the app's data no
+longer lives solely on one VM's one disk — it's backed up off-VM every
+week, with that backup path proven to work under cron's real,
+unattended conditions, and with a tested way back from a backup object
+to a running deployment.
