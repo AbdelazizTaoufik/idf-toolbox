@@ -623,20 +623,39 @@ survives a restart." Do not skip any of these three checks.
      2's image build, e.g. its `chown`/`USER` setup), not in this runbook —
      do not try to work around it by hand-`chmod`-ing inside the running
      container.
-   - Now restart the container and confirm both the submission and the
-     photo are still there:
+   - Confirm the submission actually landed in the database. There is no
+     page a freshly-registered, non-admin test account can use for this —
+     `/admin/submissions` requires an admin account, which this runbook
+     never creates — so check it directly instead, from the VM:
+
+     ```bash
+     docker compose exec app php artisan tinker --execute="echo App\Models\Submission::latest()->first()->title;"
+     ```
+
+     Expected: prints the title you just submitted through the
+     Kummerkasten form. (`php artisan tinker` is guaranteed available here —
+     `laravel/tinker` is a production dependency in `composer.json`, not a
+     dev-only one, so it's present in the image even though it was built
+     with `composer install --no-dev`.)
+   - Also reload `/buecher` in the browser and confirm the book-loan photo
+     you just uploaded is still visible — this page and the photo route
+     (`/buecher/{bookLoan}/photo/{type}`) only require `auth`+`verified`
+     and check the loan's owner, not an admin flag, so your test account
+     can reach both.
+   - Now restart the container and confirm both pieces of data are still
+     there:
 
      ```bash
      docker compose restart app
      ```
 
-     Reload `/admin/submissions` (or wherever the submission is visible) and
-     the book loan's photo in the browser. **Both must still be present
-     after the restart.** This is what actually proves the data lives in
-     the named volumes, not in the container's writable layer — a
+     Run the exact same `tinker --execute` command again and reload
+     `/buecher` again. **Both the submission and the photo must still be
+     present after the restart.** This is what actually proves the data
+     lives in the named volumes, not in the container's writable layer — a
      container's own writable layer is discarded on certain lifecycle
      events, while named volumes are not; a restart that still shows the
-     data is the concrete evidence, not an assumption.
+     same data is the concrete evidence, not an assumption.
 
 If all three checks pass, the deployment is functionally complete: HTTPS
 works end-to-end, outbound mail works end-to-end, and writes to both
