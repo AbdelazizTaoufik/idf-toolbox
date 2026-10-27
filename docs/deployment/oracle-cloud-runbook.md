@@ -12,12 +12,14 @@ without a value, that's a bug in this document, not a thing to improvise.
 The runbook is split into four parts, each appended to this same file as it's
 written:
 
-1. **Part 1 (this section): Oracle account, VM, Reserved IP, firewall** —
-   ends with a VM you can SSH into, with Docker installed and ports 22/80/443
-   open.
-2. Part 2: application deployment (clone repo, configure `.env`, `docker
-   compose up`).
-3. Part 3: domain, HTTPS/Let's Encrypt, DNS.
+1. **Part 1: Oracle account, VM, Reserved IP, firewall** — ends with a VM
+   you can SSH into, with Docker installed and ports 22/80/443 open.
+2. **Part 2 (this section): DuckDNS hostname and Brevo transactional
+   email** — ends with a resolvable `<hostname>.duckdns.org` hostname
+   pointing at the Reserved Public IP, and verified Brevo SMTP credentials
+   ready to drop into `.env.production`.
+3. Part 3: application deployment and HTTPS (clone repo, configure `.env`,
+   `docker compose up`, issue the Let's Encrypt certificate).
 4. Part 4: backups, maintenance, and day-2 operations.
 
 Two decisions in Part 1 below are **permanent or easy to silently get wrong**
@@ -311,4 +313,122 @@ which `ufw` adds automatically).
 - An active SSH session command you can repeat any time:
   `ssh -i ~/.ssh/idf-whisper-box ubuntu@<reserved-ip>`.
 
-Part 2 (application deployment) continues from here.
+Part 2 (DuckDNS and Brevo) continues from here.
+
+## Part 2: DuckDNS hostname and Brevo transactional email
+
+This part gets two things working before the app can be deployed in Part 3:
+a hostname that resolves to the VM, and an email provider the app can
+actually send through. Both are required because the app's `.env.production`
+(configured in Part 3) needs a real domain for `APP_URL`/`APP_DOMAIN` and real
+SMTP credentials for password-reset and notification emails to work.
+
+One decision below is **easy to get subtly wrong** and is called out where it
+occurs: the DuckDNS subdomain's IP field must be set to the **Reserved
+Public IP from Part 1**, not left on auto-detect — and Brevo requires a
+**separate, explicit sender-verification step** beyond just signing up, or
+outbound mail will silently fail.
+
+### Step 2.1 — Register a DuckDNS subdomain pointing at the Reserved Public IP
+
+1. Go to <https://www.duckdns.org> and sign in using an existing Google,
+   GitHub, Twitter/X, or Reddit account (DuckDNS has no separate
+   email/password signup).
+2. On the dashboard, in the subdomain field, type the name you want (e.g.
+   `idf-whisper-box`) and click **add domain**. This becomes
+   `<chosen>.duckdns.org` — call this `<hostname>` for the rest of this
+   runbook.
+3. **Set this subdomain's IP field to the Reserved Public IP from Part 1
+   (Step 1.4), not "auto detect" and not left blank.** DuckDNS is normally
+   designed around a small updater client that keeps re-pushing your
+   *current* IP on a schedule, for people with a dynamic home IP address. We
+   don't need that here: Oracle's Reserved Public IP from Step 1.4 never
+   changes, so this is a one-time, static entry. Paste the Reserved Public
+   IP directly into the IP field next to your subdomain and click
+   **update ip**.
+4. Wait a minute or two for DNS to propagate, then verify from your local
+   machine:
+
+   ```bash
+   dig +short <chosen>.duckdns.org
+   ```
+
+   Expected: prints exactly the Reserved Public IP from Part 1 (the same
+   address you noted in Step 1.4) and nothing else. If this prints nothing,
+   or a different IP, go back to the DuckDNS dashboard and confirm the IP
+   field for this subdomain was saved as the Reserved Public IP, not left on
+   auto-detect.
+5. Keep `<hostname>` (i.e. `<chosen>.duckdns.org`) noted — it becomes
+   `APP_URL` (as `https://<hostname>`) and `APP_DOMAIN` in `.env.production`
+   in Part 3.
+
+### Step 2.2 — Create a Brevo account
+
+1. Go to <https://www.brevo.com> and sign up for the free tier (email and
+   password, or an existing Google account).
+2. Brevo emails you a confirmation link — open it and click through to
+   activate the account.
+3. Complete the account setup questions (business name, use case, etc.) if
+   prompted.
+
+**Creating the account is not enough on its own — mail will not send until
+you complete Step 2.3 below.** This is the single most commonly skipped step
+in Brevo setup, and skipping it does not fail loudly: emails just queue or
+fail silently, which looks like a bug in the app rather than an incomplete
+mail setup.
+
+### Step 2.3 — Verify a sender email address (do not skip this)
+
+1. In the Brevo dashboard, open the left navigation menu → **Senders & IP**
+   → **Senders**.
+2. Click **Add a sender**. Enter the email address you want the app to send
+   from (this becomes `MAIL_FROM_ADDRESS` in Step 2.4) and a display name.
+3. Brevo sends a confirmation email to that address. Open it and click the
+   verification link inside.
+4. Back on the **Senders** page, confirm this sender now shows a
+   verified/green status. **If it still shows "pending" or unverified, stop
+   here — outbound mail will not work, and Part 3's first deploy will appear
+   to work but every email the app tries to send (password resets, etc.)
+   will silently fail to arrive.** Re-check the confirmation email (including
+   spam folder) and re-click the verification link if needed.
+
+### Step 2.4 — Generate SMTP credentials and map them to `.env.production`
+
+1. In the Brevo dashboard, open the left navigation menu → **SMTP & API** →
+   **SMTP** tab.
+2. Note the **SMTP login** shown on this page (it looks like an email
+   address ending in `@smtp-brevo.com` — this is not the same as your Brevo
+   account login email).
+3. Click **Generate a new SMTP key**, give it a name (e.g.
+   `idf-whisper-box`), and copy the generated key immediately — Brevo only
+   displays it once.
+4. These three values map directly onto keys that already exist (with
+   `CHANGE-ME` placeholders) in `.env.production.example`:
+
+   | Brevo console value | `.env.production` key |
+   | --- | --- |
+   | SMTP login (SMTP & API → SMTP) | `MAIL_USERNAME` |
+   | Generated SMTP key | `MAIL_PASSWORD` |
+   | Verified sender address (Step 2.3) | `MAIL_FROM_ADDRESS` |
+
+   The remaining mail keys already present in `.env.production.example` —
+   `MAIL_HOST=smtp-relay.brevo.com`, `MAIL_PORT=587`, and
+   `MAIL_ENCRYPTION=tls` — are already correct for Brevo's SMTP relay and do
+   not need to change.
+5. You don't need to edit `.env.production` yet — Part 3 covers cloning the
+   repo and filling in the full file. For now, just keep the SMTP login, the
+   generated SMTP key, and the verified sender address somewhere safe until
+   then.
+
+### End of Part 2 — what you should have now
+
+- A DuckDNS hostname, `<hostname>` (`<chosen>.duckdns.org`), with its IP
+  field statically set to the Reserved Public IP from Part 1 and confirmed
+  with `dig +short <chosen>.duckdns.org`.
+- A Brevo account with a sender email address that shows a
+  verified/green status under **Senders & IP** → **Senders** (not pending).
+- An SMTP login and a generated SMTP key from **SMTP & API** → **SMTP**,
+  ready to become `MAIL_USERNAME` and `MAIL_PASSWORD` respectively, with the
+  verified sender address ready to become `MAIL_FROM_ADDRESS`.
+
+Part 3 (application deployment and HTTPS) continues from here.
