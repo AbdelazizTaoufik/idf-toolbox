@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+BUCKET="idf-whisper-box-backups"
+STAMP="$(date +%Y%m%d-%H%M%S)"
+TMP="/tmp/idf-backup-${STAMP}.tar.gz"
+RETENTION_DAYS=28
+
+{
+  echo "=== backup run ${STAMP} ==="
+
+  docker run --rm -v idf-whisper-box_sqlite-data:/src/database \
+    -v idf-whisper-box_book-loan-photos:/src/book-loans \
+    -v /tmp:/dest alpine \
+    tar -czf "/dest/idf-backup-${STAMP}.tar.gz" -C /src database book-loans
+
+  oci os object put --bucket-name "$BUCKET" --file "$TMP" --name "idf-backup-${STAMP}.tar.gz" --force
+  rm -f "$TMP"
+
+  CUTOFF="$(date -d "-${RETENTION_DAYS} days" +%Y%m%d)"
+  oci os object list --bucket-name "$BUCKET" --query "data[].name" --raw-output 2>/dev/null \
+    | grep -oE 'idf-backup-[0-9]{8}-[0-9]{6}\.tar\.gz' \
+    | while read -r name; do
+        OBJ_DATE="${name#idf-backup-}"
+        OBJ_DATE="${OBJ_DATE:0:8}"
+        if [ "$OBJ_DATE" -lt "$CUTOFF" ]; then
+          oci os object delete --bucket-name "$BUCKET" --name "$name" --force
+        fi
+      done
+
+  echo "=== backup run ${STAMP} done ==="
+} >> /var/log/idf-backup.log 2>&1
