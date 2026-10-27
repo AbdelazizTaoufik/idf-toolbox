@@ -14,12 +14,14 @@ written:
 
 1. **Part 1: Oracle account, VM, Reserved IP, firewall** — ends with a VM
    you can SSH into, with Docker installed and ports 22/80/443 open.
-2. **Part 2 (this section): DuckDNS hostname and Brevo transactional
+2. **Part 2: DuckDNS hostname and Brevo transactional
    email** — ends with a resolvable `<hostname>.duckdns.org` hostname
    pointing at the Reserved Public IP, and verified Brevo SMTP credentials
    ready to drop into `.env.production`.
-3. Part 3: application deployment and HTTPS (clone repo, configure `.env`,
-   `docker compose up`, issue the Let's Encrypt certificate).
+3. **Part 3 (this section): application deployment and HTTPS** — clone the
+   repo onto the VM, configure `.env.production`, run `docker compose up`,
+   and confirm the Let's Encrypt certificate, mail, and data persistence all
+   actually work.
 4. Part 4: backups, maintenance, and day-2 operations.
 
 Two decisions in Part 1 below are **permanent or easy to silently get wrong**
@@ -433,3 +435,253 @@ mail setup.
   verified sender address ready to become `MAIL_FROM_ADDRESS`.
 
 Part 3 (application deployment and HTTPS) continues from here.
+
+## Part 3: application deployment and HTTPS
+
+This is where everything from Parts 1-2 — the VM, Docker, the Reserved IP,
+the DuckDNS hostname, the Brevo SMTP credentials — and everything already
+built into this repository's `Dockerfile`, `docker/Caddyfile`,
+`docker/entrypoint.sh`, and `docker-compose.yml` get wired together and
+tested for real, for the first time. No part of this repo's Docker setup has
+ever been run anywhere before this point — there is no Docker engine in the
+development environment this app was built in — so every check in this
+section is a genuine pass/fail test, not a formality.
+
+Three things below are **easy to get wrong in ways that don't fail loudly**,
+and are called out in bold where they occur:
+
+- `APP_KEY` must be generated **before** the container's first boot, on a
+  separate machine — the container deliberately refuses to start if it's
+  missing, rather than silently generating one for you.
+- The SQLite database file and the book-loan photo storage directory need to
+  actually be writable by the user PHP runs as inside the container — the
+  only way to prove this is to make the container do real writes (a
+  migration, and a real photo upload), not just watch it start.
+- The HTTPS certificate only comes up automatically if DNS, the Reserved IP,
+  and both firewalls (Oracle's Security List from Step 1.5 and `ufw` from
+  Step 1.9) were all already correct *before* the container's first boot —
+  if any one of them is wrong, the symptom just looks like "it's taking a
+  while," not "here is the one thing that's broken."
+
+### Step 3.1 — Clone the repo and configure `.env.production`
+
+1. SSH into the VM using the command from Step 1.6:
+
+   ```bash
+   ssh -i ~/.ssh/idf-whisper-box ubuntu@<reserved-ip>
+   ```
+
+2. Clone the repository onto the VM:
+
+   ```bash
+   git clone https://github.com/AbdelazizTaoufik/idf-worry-box.git idf-whisper-box
+   cd idf-whisper-box
+   ```
+
+3. Copy the committed template to the real, git-ignored production env file:
+
+   ```bash
+   cp .env.production.example .env.production
+   ```
+
+   `.env.production` is listed in `.gitignore` and is never committed — it
+   only ever exists on the VM (and, transiently, wherever you draft it).
+
+4. **Generate `APP_KEY` now, before you touch `docker compose` at all — and
+   generate it on a different machine, not on the VM, and never let the
+   container generate it for you.** `docker/entrypoint.sh` (already
+   committed, from Task 2) checks `APP_KEY` on every container start and
+   deliberately refuses to boot if it's empty:
+
+   ```sh
+   if [ -z "$APP_KEY" ]; then
+     echo "FATAL: APP_KEY is not set. Generate one with 'php artisan key:generate --show' and put it in .env.production before starting this container." >&2
+     exit 1
+   fi
+   ```
+
+   This is intentional: an app key controls session/cookie encryption and
+   must stay stable for the life of the deployment, so it must be a value
+   *you* generate and record, not something regenerated on every container
+   restart. Run this on any machine that already has PHP and this repo's
+   Composer dependencies installed (e.g. your local development machine —
+   **not** the VM, which has Docker but not a bare PHP install, and **not**
+   by running it inside the container, which is exactly the failure mode
+   this check exists to prevent):
+
+   ```bash
+   php artisan key:generate --show
+   ```
+
+   Expected output: a single line like `base64:AbCdEf...==` (44 base64
+   characters after the `base64:` prefix). Copy that whole line.
+
+5. On the VM, open `.env.production` in an editor (`nano .env.production`)
+   and fill in every `CHANGE-ME` value:
+
+   | `.env.production` key | Value | Source |
+   | --- | --- | --- |
+   | `APP_KEY` | `base64:...` from sub-step 4 | generated just now, on a machine with PHP — never left blank |
+   | `APP_URL` | `https://<hostname>` | `<hostname>` from Part 2, Step 2.1 |
+   | `APP_DOMAIN` | `<hostname>` (no `https://`, no trailing slash) | same `<hostname>` — this is what Caddy reads to know which domain to request a certificate for |
+   | `MAIL_USERNAME` | the SMTP login | Part 2, Step 2.4 |
+   | `MAIL_PASSWORD` | the generated SMTP key | Part 2, Step 2.4 |
+   | `MAIL_FROM_ADDRESS` | the verified sender address | Part 2, Step 2.3 |
+
+   Leave every other line in the file as the template already has it
+   (`DB_CONNECTION=sqlite`, `MAIL_HOST=smtp-relay.brevo.com`, `MAIL_PORT=587`,
+   `MAIL_ENCRYPTION=tls`, etc. — these are already correct and don't need
+   changing). Save and close the file.
+
+6. Double check there is no stray `CHANGE-ME` left anywhere in the file:
+
+   ```bash
+   grep CHANGE-ME .env.production
+   ```
+
+   Expected: no output (no matches). If this prints any line, go back and
+   fill in that value before continuing.
+
+### Step 3.2 — First boot
+
+On the VM, from inside the `idf-whisper-box` directory:
+
+```bash
+./deploy.sh
+```
+
+This script (already committed) runs, in order: `git pull --ff-only`,
+`docker compose build`, `docker compose up -d`, then
+`docker compose logs --tail=50 app`.
+
+Expected, reading through the tail of logs printed at the end:
+
+- The image builds without error (first run only — this takes a few
+  minutes on the Ampere A1's 2 OCPUs).
+- `docker/entrypoint.sh` runs: it creates `/app/storage/database` and
+  `/app/storage/app/book-loans` inside the container, touches the SQLite
+  file, then runs `php artisan migrate --force` followed by
+  `config:cache`, `route:cache`, and `view:cache` — you should see
+  migration output (table names scrolling by) with **no error lines**, not
+  just "Nothing to migrate."
+- Caddy logs a line indicating it obtained (or is requesting) a TLS
+  certificate for the `APP_DOMAIN` value you set in Step 3.1 — look for
+  text referencing the ACME/Let's Encrypt process and your `<hostname>`.
+  There should be no repeating "challenge failed" errors.
+
+If you see repeated certificate-request retries instead of success, stop and
+recheck, in this order, before looking anywhere else: `dig +short
+<hostname>.duckdns.org` still resolves to the Reserved IP (Part 2, Step
+2.1), port 80 is open in both the Oracle Security List (Step 1.5) and `ufw`
+(Step 1.9), and `APP_DOMAIN` in `.env.production` exactly matches
+`<hostname>` with no typo. Caddy's HTTP-01 challenge needs all three to be
+correct simultaneously on the very first attempt it can reach from the
+internet — a wrong value in any one of them just looks like "it's slow,"
+not "here is the broken thing."
+
+### Step 3.3 — Functional check
+
+This is the real test of Tasks 2-6's Docker setup — not "the container
+started," but "a real user can do everything the app is for, and the data
+survives a restart." Do not skip any of these three checks.
+
+1. **Prove the TLS chain end-to-end.** From your local machine (not the VM):
+
+   ```bash
+   curl -I https://<hostname>.duckdns.org
+   ```
+
+   Expected: `HTTP/2 200` (or a redirect, e.g. `HTTP/2 302` to `/login`),
+   with no certificate warning or error. **Do not add `-k` (or
+   `--insecure`) to this command.** The entire point of this check is that
+   `curl` validates the certificate against its normal trusted CA bundle,
+   the same way a real visitor's browser would — `-k` skips that
+   validation, so a `-k`'d request can succeed even if DNS, the firewall, or
+   Caddy's certificate issuance is subtly broken. A plain `curl -I` (no
+   `-k`) succeeding is the actual proof that DNS (Part 2), both firewall
+   layers (Part 1), and Caddy's Let's Encrypt issuance (Step 3.2) are all
+   correctly wired together.
+
+2. **Prove mail works end-to-end.** In a browser, go to
+   `https://<hostname>.duckdns.org` and register a new test account through
+   the normal registration form. Confirm the verification email actually
+   arrives in that account's inbox (check spam too) and that clicking its
+   link marks the account verified. This is the real, end-to-end test of
+   the Brevo credentials from Part 2 — if this email never arrives, go back
+   to Part 2, Step 2.3 and confirm the sender is still shown as verified.
+
+3. **Prove the writable volumes work, and prove it with a restart.** Still
+   logged in as that now-verified test account:
+   - Open `/create-submission` and submit a Kummerkasten entry.
+   - Open `/buecher` (book loans) and borrow a book, which includes
+     uploading a book-loan photo through the UI.
+   - If either of these fails with a permission or write error, **that is
+     exactly the risk this check exists to catch**: Docker's named volumes
+     (`sqlite-data` and `book-loan-photos` in `docker-compose.yml`) are
+     created fresh and owned by root, and FrankenPHP's PHP process may not
+     be able to write to them. The fix belongs in the `Dockerfile` (Task
+     2's image build, e.g. its `chown`/`USER` setup), not in this runbook —
+     do not try to work around it by hand-`chmod`-ing inside the running
+     container.
+   - Now restart the container and confirm both the submission and the
+     photo are still there:
+
+     ```bash
+     docker compose restart app
+     ```
+
+     Reload `/admin/submissions` (or wherever the submission is visible) and
+     the book loan's photo in the browser. **Both must still be present
+     after the restart.** This is what actually proves the data lives in
+     the named volumes, not in the container's writable layer — a
+     container's own writable layer is discarded on certain lifecycle
+     events, while named volumes are not; a restart that still shows the
+     data is the concrete evidence, not an assumption.
+
+If all three checks pass, the deployment is functionally complete: HTTPS
+works end-to-end, outbound mail works end-to-end, and writes to both
+persistent volumes survive a container restart.
+
+### Step 3.4 — Redeploy procedure
+
+For any future code change, the workflow is the same every time:
+
+1. On your development machine: commit and push the change as normal
+   (`git add`, `git commit`, `git push`).
+2. On the VM, inside the `idf-whisper-box` directory:
+
+   ```bash
+   ./deploy.sh
+   ```
+
+This re-runs `git pull --ff-only`, rebuilds the image with `docker compose
+build`, and restarts the container with `docker compose up -d` — then tails
+the last 50 lines of the `app` service's logs so you can immediately see
+whether migrations ran cleanly and the container is healthy.
+
+**A rebuild and restart never touches the named volumes.** `sqlite-data`,
+`book-loan-photos`, `caddy-data`, and `caddy-config` (declared in
+`docker-compose.yml`) persist across every `./deploy.sh` run, exactly as
+they persisted across the `docker compose restart app` in Step 3.3 — the
+SQLite database, all uploaded book-loan photos, and the issued TLS
+certificate all survive a redeploy untouched. Only the application code and
+the image itself are replaced.
+
+### End of Part 3 — what you should have now
+
+- The repo cloned onto the VM, with `.env.production` fully filled in (no
+  `CHANGE-ME` placeholders left) and `APP_KEY` set to a value generated
+  outside the container, before the container's first boot.
+- A running deployment reachable at `https://<hostname>.duckdns.org` with a
+  valid, browser-trusted TLS certificate (confirmed with a plain `curl -I`,
+  no `-k`).
+- A verified test account that received a real verification email through
+  Brevo.
+- A Kummerkasten submission and a book-loan photo upload, both confirmed to
+  still be present after a `docker compose restart app` — proving the
+  named volumes, not the container's writable layer, hold the data.
+- A standing redeploy procedure (`git push` from a dev machine, then
+  `./deploy.sh` on the VM) that rebuilds the image and restarts the
+  container without touching any of the named volumes.
+
+Part 4 (backups, maintenance, and day-2 operations) continues from here.
