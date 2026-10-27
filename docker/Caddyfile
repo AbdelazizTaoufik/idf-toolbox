@@ -9,6 +9,7 @@
 			fields {
 				request>remote_ip delete
 				request>remote_port delete
+				request>client_ip delete
 			}
 		}
 	}

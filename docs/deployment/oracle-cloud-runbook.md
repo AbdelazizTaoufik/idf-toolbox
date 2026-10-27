@@ -870,12 +870,11 @@ check and assume the defaults are already correct.**
    and supply them as environment variable overrides wherever you invoke the
    script: when running it manually (sub-step 4 below) and in the crontab
    line itself (Step 4.3 shows the exact syntax).
-4. Make the script executable if it isn't already, and confirm it runs
-   cleanly by hand before trusting cron with it. If the names from sub-step
-   2 matched the defaults, no overrides are needed:
+4. Confirm the script runs cleanly by hand before trusting cron with it
+   (it's already committed executable, so no `chmod` is needed). If the
+   names from sub-step 2 matched the defaults, no overrides are needed:
 
    ```bash
-   chmod +x backup/backup.sh
    ./backup/backup.sh
    ```
 
@@ -884,7 +883,6 @@ check and assume the defaults are already correct.**
    ones `docker volume ls` printed):
 
    ```bash
-   chmod +x backup/backup.sh
    SQLITE_VOLUME=actual-sqlite-volume-name BOOK_LOAN_VOLUME=actual-book-loan-volume-name ./backup/backup.sh
    ```
 
@@ -919,15 +917,22 @@ will be `/home/ubuntu/idf-whisper-box` if you followed Step 3.1 exactly):
 ```
 
 **Only if Step 4.2 found the actual volume names differ from the script's
-defaults**, prefix the same line with the two overrides instead, using the
-exact names `docker volume ls` printed:
+defaults**, add the two overrides as separate `crontab` environment-variable
+lines *above* the job line, using the exact names `docker volume ls`
+printed. Do not put them on the same line as the schedule — crontab parses
+a `NAME=value` line by taking everything after the first `=` as the value,
+so appending a schedule and command to the same line would make the whole
+rest of the line part of the variable's value and silently install no job
+at all:
 
 ```
-SQLITE_VOLUME=actual-sqlite-volume-name BOOK_LOAN_VOLUME=actual-book-loan-volume-name 0 3 * * 0 /path/to/idf-whisper-box/backup/backup.sh
+SQLITE_VOLUME=actual-sqlite-volume-name
+BOOK_LOAN_VOLUME=actual-book-loan-volume-name
+0 3 * * 0 /path/to/idf-whisper-box/backup/backup.sh
 ```
 
 If the names already matched the defaults in Step 4.2, use the plain line
-above with no overrides.
+above with no overrides and no extra lines.
 
 This runs the backup every Sunday at 03:00 server time. Save and close the
 editor. Confirm it was installed:
@@ -990,11 +995,11 @@ cron-triggered run succeed.
    ```
 
    Change the line back to the real weekly schedule from Step 4.3 — either
-   `0 3 * * 0 /path/to/idf-whisper-box/backup/backup.sh` or, if Step 4.2
-   required the `SQLITE_VOLUME`/`BOOK_LOAN_VOLUME` overrides, the same line
-   with those overrides restored — save, and close. Confirm with
-   `crontab -l` that it now shows `0 3 * * 0` again, not the temporary
-   test schedule.
+   `0 3 * * 0 /path/to/idf-whisper-box/backup/backup.sh` on its own, or, if
+   Step 4.2 required the `SQLITE_VOLUME`/`BOOK_LOAN_VOLUME` overrides, those
+   two assignments restored as their own lines directly above it — save,
+   and close. Confirm with `crontab -l` that it now shows `0 3 * * 0` again,
+   not the temporary test schedule.
 
 ### Step 4.5 — Restore procedure
 
